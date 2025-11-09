@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 1: Variables & Types - Fuzion Interactive Tutorial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --bg-light: #f8f9fa;
+            --text-dark: #2c3e50;
+            --text-light: #6c757d;
+            --border: #e9ecef;
+            --code-bg: #2d2d2d;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--bg-light);
+        }
+
+        /* Header */
+        header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .progress-bar {
+            flex: 1;
+            max-width: 400px;
+            margin: 0 2rem;
+        }
+
+        .progress-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-track {
+            height: 8px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* Main Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        /* Lesson Sidebar */
+        .lesson-nav {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .lesson-nav h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .lesson-list {
+            list-style: none;
+        }
+
+        .lesson-item {
+            margin-bottom: 0.75rem;
+        }
+
+        .lesson-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-dark);
+            transition: all 0.3s;
+        }
+
+        .lesson-link:hover {
+            background: var(--bg-light);
+        }
+
+        .lesson-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .lesson-link.completed {
+            color: var(--success);
+        }
+
+        .lesson-icon {
+            font-size: 1.2rem;
+        }
+
+        .lesson-number {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* Main Content */
+        .content {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .lesson-header {
+            margin-bottom: 2rem;
+        }
+
+        .lesson-badge {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .lesson-intro {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin: 2.5rem 0 1rem;
+            color: var(--text-dark);
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--text-dark);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+        }
+
+        .info-box.tip {
+            background: #ecfdf5;
+            border-color: var(--success);
+        }
+
+        .info-box.key-point {
+            background: #eff6ff;
+            border-color: var(--primary);
+        }
+
+        .info-box.warning {
+            background: #fffbeb;
+            border-color: var(--warning);
+        }
+
+        .info-box-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Code Examples */
+        .code-example {
+            background: var(--code-bg);
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: #252525;
+            border-bottom: 1px solid #3d3d3d;
+        }
+
+        .code-label {
+            color: #d4d4d4;
+            font-size: 0.85rem;
+        }
+
+        .run-btn {
+            padding: 0.4rem 1rem;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.3s;
+        }
+
+        .run-btn:hover {
+            background: #059669;
+        }
+
+        pre {
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #d4d4d4;
+        }
+
+        .keyword { color: #c586c0; }
+        .string { color: #ce9178; }
+        .function { color: #dcdcaa; }
+        .comment { color: #6a9955; }
+        .number { color: #b5cea8; }
+
+        .output-box {
+            background: #1a1a1a;
+            border-top: 1px solid #3d3d3d;
+            padding: 1rem;
+            color: #d4d4d4;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .output-box.show {
+            display: block;
+        }
+
+        .output-label {
+            color: var(--success);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Interactive Exercise */
+        .exercise {
+            background: #f0f9ff;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .exercise-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .exercise-icon {
+            font-size: 2rem;
+        }
+
+        .exercise-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .exercise-prompt {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .code-editor {
+            background: var(--code-bg);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .code-editor textarea {
+            width: 100%;
+            min-height: 150px;
+            background: transparent;
+            border: none;
+            color: #d4d4d4;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            resize: vertical;
+            outline: none;
+            line-height: 1.6;
+        }
+
+        .exercise-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background: #dee2e6;
+        }
+
+        .exercise-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .exercise-result.show {
+            display: block;
+        }
+
+        .exercise-result.success {
+            background: #d1fae5;
+            border: 2px solid var(--success);
+            color: #065f46;
+        }
+
+        .exercise-result.error {
+            background: #fee2e2;
+            border: 2px solid var(--error);
+            color: #991b1b;
+        }
+
+        .result-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+
+        /* Quiz */
+        .quiz {
+            background: #fef3c7;
+            border: 2px solid var(--warning);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .quiz-question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .quiz-options {
+            list-style: none;
+        }
+
+        .quiz-option {
+            background: white;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--warning);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: #d1fae5;
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--error);
+            background: #fee2e2;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+        }
+
+        /* Navigation */
+        .lesson-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border);
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-dark);
+            transform: translateX(5px);
+        }
+
+        .nav-btn.prev:hover {
+            transform: translateX(-5px);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .lesson-nav {
+                position: relative;
+                top: 0;
+            }
+
+            .progress-bar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 2rem 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .exercise-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <a href="/" class="logo">
+                <span>⚡</span>
+                <span>Fuzion Tutorial</span>
+            </a>
+
+            <div class="progress-bar">
+                <div class="progress-label">Lesson 1 Progress: <span id="progress-percent">0%</span></div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+
+            <div>
+                <span class="lesson-badge">Beginner Track</span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Lesson Navigation -->
+        <aside class="lesson-nav">
+            <h3>Lessons</h3>
+            <ul class="lesson-list">
+                <li class="lesson-item">
+                    <a href="#lesson1" class="lesson-link active">
+                        <span class="lesson-icon">📚</span>
+                        <div>
+                            <div>Variables & Types</div>
+                            <div class="lesson-number">Lesson 1</div>
+                        </div>
+                    </a>
+                </li>
+                <li class="lesson-item">
+                    <a href="#lesson2" class="lesson-link">
+                        <span class="lesson-icon">🔢</span>
+                        <div>
+                            <div>Numbers & Math</div>
+                            <div class="lesson-number">Lesson 2</div>
+                        </div>
+                    </a>
+                </li>
+                <li class="lesson-item">
+                    <a href="#lesson3" class="lesson-link">
+                        <span class="lesson-icon">🔀</span>
+                        <div>
+                            <div>Control Flow</div>
+                            <div class="lesson-number">Lesson 3</div>
+                        </div>
+                    </a>
+                </li>
+                <li class="lesson-item">
+                    <a href="#lesson4" class="lesson-link">
+                        <span class="lesson-icon">🔁</span>
+                        <div>
+                            <div>Loops</div>
+                            <div class="lesson-number">Lesson 4</div>
+                        </div>
+                    </a>
+                </li>
+                <li class="lesson-item">
+                    <a href="#lesson5" class="lesson-link">
+                        <span class="lesson-icon">📋</span>
+                        <div>
+                            <div>Lists</div>
+                            <div class="lesson-number">Lesson 5</div>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content">
+            <!-- Lesson Header -->
+            <div class="lesson-header">
+                <div class="lesson-badge">Lesson 1 of 30</div>
+                <h1>Variables & Types</h1>
+                <p class="lesson-intro">
+                    Learn how to store and work with different types of data in Fuzion.
+                    This is the foundation of all programming!
+                </p>
+            </div>
+
+            <!-- Section 1: Introduction -->
+            <section id="section1" class="lesson-section">
+                <h2>What Are Variables?</h2>
+                <p>
+                    Think of a variable as a <strong>labeled box</strong> where you can store information.
+                    Just like you might label a box "Books" or "Toys", in programming we give variables
+                    names that describe what they hold.
+                </p>
+
+                <div class="info-box key-point">
+                    <div class="info-box-title">🎯 Key Point</div>
+                    <p>
+                        A variable has two parts: a <strong>name</strong> (what you call it) and a
+                        <strong>value</strong> (what it contains).
+                    </p>
+                </div>
+
+                <h3>Your First Variable</h3>
+                <p>Creating a variable in Fuzion is super simple:</p>
+
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Example: Creating a variable</span>
+                        <button class="run-btn" onclick="runExample1()">▶ Run</button>
+                    </div>
+                    <pre><code><span class="comment"># Create a variable called 'name' and store your name in it</span>
+name = <span class="string">"Alice"</span>
+
+<span class="comment"># Print the value</span>
+<span class="keyword">print</span> name</code></pre>
+                    <div class="output-box" id="output1">
+                        <div class="output-label">Output:</div>
+                        <div id="output1-text"></div>
+                    </div>
+                </div>
+
+                <p>That's it! Notice a few things:</p>
+                <ul>
+                    <li>No special keywords needed (unlike other languages)</li>
+                    <li>No semicolons at the end of lines</li>
+                    <li>Comments start with <code class="inline-code" style="background: #f1f3f5; color: #e83e8c; padding: 0.2rem 0.4rem; border-radius: 3px;">#</code></li>
+                </ul>
+            </section>
+
+            <!-- Section 2: Variable Names -->
+            <section id="section2" class="lesson-section">
+                <h2>Naming Variables</h2>
+                <p>You can name variables almost anything, but follow these rules:</p>
+
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Good variable names</span>
+                    </div>
+                    <pre><code><span class="comment"># ✓ Good names - clear and descriptive</span>
+user_name = <span class="string">"Bob"</span>
+age = <span class="number">25</span>
+total_price = <span class="number">99.99</span>
+is_student = <span class="keyword">true</span>
+
+<span class="comment"># ✗ Avoid these - unclear or confusing</span>
+<span class="comment"># x = "Bob"          # What is x?</span>
+<span class="comment"># a123 = 25          # What does a123 mean?</span>
+<span class="comment"># TotalPrice = 99.99 # Don't use capital letters</span></code></pre>
+                </div>
+
+                <div class="info-box tip">
+                    <div class="info-box-title">💡 Best Practice</div>
+                    <p>
+                        Use names that describe what the variable contains. Someone reading your code
+                        (including future you!) should understand what each variable is for.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Section 3: Data Types -->
+            <section id="section3" class="lesson-section">
+                <h2>Types of Data</h2>
+                <p>Variables can store different <strong>types</strong> of data. Here are the main ones:</p>
+
+                <h3>1. Text (Strings)</h3>
+                <p>Text is wrapped in quotes:</p>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Working with text</span>
+                        <button class="run-btn" onclick="runExample2()">▶ Run</button>
+                    </div>
+                    <pre><code>first_name = <span class="string">"Alice"</span>
+last_name = <span class="string">"Smith"</span>
+city = <span class="string">"Lagos"</span>
+
+<span class="keyword">print</span> first_name
+<span class="keyword">print</span> last_name
+<span class="keyword">print</span> city</code></pre>
+                    <div class="output-box" id="output2">
+                        <div class="output-label">Output:</div>
+                        <div id="output2-text"></div>
+                    </div>
+                </div>
+
+                <h3>2. Numbers</h3>
+                <p>Numbers don't need quotes:</p>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Working with numbers</span>
+                        <button class="run-btn" onclick="runExample3()">▶ Run</button>
+                    </div>
+                    <pre><code>age = <span class="number">25</span>
+price = <span class="number">19.99</span>
+year = <span class="number">2025</span>
+
+<span class="keyword">print</span> age
+<span class="keyword">print</span> price
+<span class="keyword">print</span> year</code></pre>
+                    <div class="output-box" id="output3">
+                        <div class="output-label">Output:</div>
+                        <div id="output3-text"></div>
+                    </div>
+                </div>
+
+                <h3>3. True/False (Booleans)</h3>
+                <p>For yes/no, on/off, true/false values:</p>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Working with booleans</span>
+                        <button class="run-btn" onclick="runExample4()">▶ Run</button>
+                    </div>
+                    <pre><code>is_student = <span class="keyword">true</span>
+has_license = <span class="keyword">false</span>
+is_raining = <span class="keyword">true</span>
+
+<span class="keyword">print</span> is_student
+<span class="keyword">print</span> has_license
+<span class="keyword">print</span> is_raining</code></pre>
+                    <div class="output-box" id="output4">
+                        <div class="output-label">Output:</div>
+                        <div id="output4-text"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: String Interpolation -->
+            <section id="section4" class="lesson-section">
+                <h2>Putting Variables in Text</h2>
+                <p>You can insert variables into text using <code style="background: #f1f3f5; color: #e83e8c; padding: 0.2rem 0.4rem; border-radius: 3px;">{variable_name}</code>:</p>
+
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">String interpolation</span>
+                        <button class="run-btn" onclick="runExample5()">▶ Run</button>
+                    </div>
+                    <pre><code>name = <span class="string">"Alice"</span>
+age = <span class="number">25</span>
+city = <span class="string">"Lagos"</span>
+
+<span class="keyword">print</span> <span class="string">"My name is {name}"</span>
+<span class="keyword">print</span> <span class="string">"I am {age} years old"</span>
+<span class="keyword">print</span> <span class="string">"I live in {city}"</span>
+<span class="keyword">print</span> <span class="string">"Hi, I'm {name}, I'm {age} and I live in {city}"</span></code></pre>
+                    <div class="output-box" id="output5">
+                        <div class="output-label">Output:</div>
+                        <div id="output5-text"></div>
+                    </div>
+                </div>
+
+                <div class="info-box tip">
+                    <div class="info-box-title">💡 Pro Tip</div>
+                    <p>
+                        This makes your output much more readable than joining strings with <code style="background: #f1f3f5; color: #e83e8c; padding: 0.2rem 0.4rem; border-radius: 3px;">+</code> signs!
+                    </p>
+                </div>
+            </section>
+
+            <!-- Interactive Exercise 1 -->
+            <div class="exercise" id="exercise1">
+                <div class="exercise-header">
+                    <span class="exercise-icon">✏️</span>
+                    <div class="exercise-title">Exercise 1: Create Your Profile</div>
+                </div>
+
+                <div class="exercise-prompt">
+                    <p><strong>Task:</strong> Create variables for your profile and print a message about yourself.</p>
+                    <p>Create these variables:</p>
+                    <ul>
+                        <li><code style="background: #f1f3f5; color: #e83e8c; padding: 0.2rem 0.4rem; border-radius: 3px;">your_name</code> - your name as text</li>
+                        <li><code style="background: #f1f3f5; color: #e83e8c; padding: 0.2rem 0.4rem; border-radius: 3px;">your_age</code> - your age as a number</li>
+                        <li><code style="background: #f1f3f5; color: #e83e8c; padding: 0.2rem 0.4rem; border-radius: 3px;">your_city</code> - your city as text</li>
+                    </ul>
+                    <p>Then print: <code style="background: #f1f3f5; color: #e83e8c; padding: 0.2rem 0.4rem; border-radius: 3px;">"I'm {your_name}, {your_age} years old, from {your_city}"</code></p>
+                </div>
+
+                <div class="code-editor">
+                    <textarea id="exercise1-code" placeholder="Write your code here..."># Create your variables here
+your_name =
+your_age =
+your_city =
+
+# Print your message here
+print </textarea>
+                </div>
+
+                <div class="exercise-actions">
+                    <button class="btn btn-primary" onclick="checkExercise1()">✓ Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint1()">💡 Show Hint</button>
+                    <button class="btn btn-secondary" onclick="showSolution1()">👁️ Show Solution</button>
+                </div>
+
+                <div class="exercise-result" id="exercise1-result"></div>
+            </div>
+
+            <!-- Quiz -->
+            <div class="quiz" id="quiz1">
+                <div class="quiz-question">
+                    🤔 Quick Quiz: Which of these is a valid variable name in Fuzion?
+                </div>
+                <ul class="quiz-options">
+                    <li class="quiz-option" onclick="selectQuizOption(this, false)">
+                        A) <code style="background: white; padding: 0.2rem 0.4rem; border-radius: 3px;">123name</code> (starts with a number)
+                    </li>
+                    <li class="quiz-option" onclick="selectQuizOption(this, true)">
+                        B) <code style="background: white; padding: 0.2rem 0.4rem; border-radius: 3px;">user_name</code> (words separated by underscore)
+                    </li>
+                    <li class="quiz-option" onclick="selectQuizOption(this, false)">
+                        C) <code style="background: white; padding: 0.2rem 0.4rem; border-radius: 3px;">user-name</code> (words separated by dash)
+                    </li>
+                    <li class="quiz-option" onclick="selectQuizOption(this, false)">
+                        D) <code style="background: white; padding: 0.2rem 0.4rem; border-radius: 3px;">user name</code> (words with space)
+                    </li>
+                </ul>
+                <div class="quiz-feedback" id="quiz1-feedback"></div>
+            </div>
+
+            <!-- Section 5: Immutability -->
+            <section id="section5" class="lesson-section">
+                <h2>Variables Are Immutable by Default</h2>
+                <p>
+                    One unique feature of Fuzion: variables <strong>can't be changed</strong> unless you explicitly say so. This prevents accidental bugs!
+                </p>
+
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">This won't work (immutable by default)</span>
+                    </div>
+                    <pre><code>score = <span class="number">100</span>
+<span class="comment"># score = 200  # ERROR! Can't change 'score'</span></code></pre>
+                </div>
+
+                <h3>Making Variables Changeable</h3>
+                <p>Use the <code style="background: #f1f3f5; color: #e83e8c; padding: 0.2rem 0.4rem; border-radius: 3px;">change</code> keyword if you need to modify a variable:</p>
+
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Mutable variables</span>
+                        <button class="run-btn" onclick="runExample6()">▶ Run</button>
+                    </div>
+                    <pre><code><span class="comment"># Use 'change' to make it mutable</span>
+<span class="keyword">change</span> score = <span class="number">0</span>
+
+<span class="keyword">print</span> <span class="string">"Starting score: {score}"</span>
+
+score = <span class="number">10</span>
+<span class="keyword">print</span> <span class="string">"After round 1: {score}"</span>
+
+score = <span class="number">25</span>
+<span class="keyword">print</span> <span class="string">"After round 2: {score}"</span>
+
+score = <span class="number">50</span>
+<span class="keyword">print</span> <span class="string">"Final score: {score}"</span></code></pre>
+                    <div class="output-box" id="output6">
+                        <div class="output-label">Output:</div>
+                        <div id="output6-text"></div>
+                    </div>
+                </div>
+
+                <div class="info-box key-point">
+                    <div class="info-box-title">🎯 Why This Matters</div>
+                    <p>
+                        Immutability by default helps prevent bugs. If you accidentally try to change a variable
+                        you didn't mean to change, Fuzion will catch the error immediately!
+                    </p>
+                </div>
+
+                <div class="info-box tip">
+                    <div class="info-box-title">💡 When to Use 'change'</div>
+                    <p>Only use <code style="background: #f1f3f5; color: #e83e8c; padding: 0.2rem 0.4rem; border-radius: 3px;">change</code> when you know you'll need to update the variable later. For most variables, stick with the default (immutable).</p>
+                </div>
+            </section>
+
+            <!-- Interactive Exercise 2 -->
+            <div class="exercise" id="exercise2">
+                <div class="exercise-header">
+                    <span class="exercise-icon">✏️</span>
+                    <div class="exercise-title">Exercise 2: Score Tracker</div>
+                </div>
+
+                <div class="exercise-prompt">
+                    <p><strong>Task:</strong> Create a game score tracker that increases.</p>
+                    <p>Requirements:</p>
+                    <ul>
+                        <li>Create a <strong>changeable</strong> variable called <code style="background: #f1f3f5; color: #e83e8c; padding: 0.2rem 0.4rem; border-radius: 3px;">score</code> starting at 0</li>
+                        <li>Print the starting score</li>
+                        <li>Add 10 points and print the new score</li>
+                        <li>Add 15 more points and print the final score</li>
+                    </ul>
+                    <p><strong>Expected output:</strong></p>
+                    <pre style="background: white; padding: 1rem; border-radius: 4px;">Starting score: 0
+After first round: 10
+Final score: 25</pre>
+                </div>
+
+                <div class="code-editor">
+                    <textarea id="exercise2-code" placeholder="Write your code here..."># Create a changeable score variable
+
+# Print starting score
+
+# Add 10 points
+
+# Print score
+
+# Add 15 more points
+
+# Print final score
+</textarea>
+                </div>
+
+                <div class="exercise-actions">
+                    <button class="btn btn-primary" onclick="checkExercise2()">✓ Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint2()">💡 Show Hint</button>
+                    <button class="btn btn-secondary" onclick="showSolution2()">👁️ Show Solution</button>
+                </div>
+
+                <div class="exercise-result" id="exercise2-result"></div>
+            </div>
+
+            <!-- Section 6: Type Checking -->
+            <section id="section6" class="lesson-section">
+                <h2>Type Inference</h2>
+                <p>
+                    Fuzion is smart! It automatically figures out what type of data a variable contains:
+                </p>
+
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Fuzion figures out types automatically</span>
+                    </div>
+                    <pre><code>name = <span class="string">"Alice"</span>        <span class="comment"># Fuzion knows this is text</span>
+age = <span class="number">25</span>               <span class="comment"># Fuzion knows this is a number</span>
+is_student = <span class="keyword">true</span>      <span class="comment"># Fuzion knows this is true/false</span>
+
+<span class="comment"># You don't need to tell Fuzion the type!</span></code></pre>
+                </div>
+
+                <div class="info-box tip">
+                    <div class="info-box-title">💡 Compare to Other Languages</div>
+                    <p>In many languages, you'd write: <code style="background: #f1f3f5; color: #e83e8c; padding: 0.2rem 0.4rem; border-radius: 3px;">String name = "Alice"</code> or <code style="background: #f1f3f5; color: #e83e8c; padding: 0.2rem 0.4rem; border-radius: 3px;">int age = 25</code>. Fuzion makes it simpler!</p>
+                </div>
+            </section>
+
+            <!-- Lesson Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>🎉 Lesson Complete!</h2>
+
+                <div class="info-box key-point">
+                    <div class="info-box-title">📝 What You Learned</div>
+                    <ul style="margin-left: 1.5rem; margin-top: 1rem;">
+                        <li>How to create variables with <code style="background: #f1f3f5; color: #e83e8c; padding: 0.2rem 0.4rem; border-radius: 3px;">name = value</code></li>
+                        <li>Three main data types: text (strings), numbers, and booleans</li>
+                        <li>How to put variables in text using <code style="background: #f1f3f5; color: #e83e8c; padding: 0.2rem 0.4rem; border-radius: 3px;">{variable_name}</code></li>
+                        <li>Variables are immutable by default (use <code style="background: #f1f3f5; color: #e83e8c; padding: 0.2rem 0.4rem; border-radius: 3px;">change</code> to make them mutable)</li>
+                        <li>Fuzion automatically figures out types</li>
+                    </ul>
+                </div>
+
+                <h3>Key Takeaways</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 1.5rem 0;">
+                    <div style="background: #ecfdf5; padding: 1.5rem; border-radius: 8px;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">✅</div>
+                        <strong>Simple Syntax</strong>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">No semicolons, no type declarations, just clear code</p>
+                    </div>
+                    <div style="background: #eff6ff; padding: 1.5rem; border-radius: 8px;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛡️</div>
+                        <strong>Safe by Default</strong>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Immutability prevents accidental changes</p>
+                    </div>
+                    <div style="background: #fef3c7; padding: 1.5rem; border-radius: 8px;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎯</div>
+                        <strong>Type Inference</strong>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Fuzion figures out types automatically</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Navigation Footer -->
+            <div class="lesson-footer">
+                <a href="#intro" class="nav-btn prev">
+                    ← Back to Introduction
+                </a>
+                <a href="#lesson2" class="nav-btn">
+                    Next: Numbers & Math →
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Progress tracking
+        let completedSections = 0;
+        const totalSections = 6;
+
+        function updateProgress() {
+            completedSections++;
+            const percent = Math.min(Math.round((completedSections / totalSections) * 100), 100);
+            document.getElementById('progress-percent').textContent = percent + '%';
+            document.getElementById('progress-fill').style.width = percent + '%';
+        }
+
+        // Run code examples
+        function runExample1() {
+            const output = document.getElementById('output1');
+            const outputText = document.getElementById('output1-text');
+            outputText.textContent = 'Alice';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample2() {
+            const output = document.getElementById('output2');
+            const outputText = document.getElementById('output2-text');
+            outputText.innerHTML = 'Alice<br>Smith<br>Lagos';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample3() {
+            const output = document.getElementById('output3');
+            const outputText = document.getElementById('output3-text');
+            outputText.innerHTML = '25<br>19.99<br>2025';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample4() {
+            const output = document.getElementById('output4');
+            const outputText = document.getElementById('output4-text');
+            outputText.innerHTML = 'true<br>false<br>true';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample5() {
+            const output = document.getElementById('output5');
+            const outputText = document.getElementById('output5-text');
+            outputText.innerHTML = `My name is Alice<br>I am 25 years old<br>I live in Lagos<br>Hi, I'm Alice, I'm 25 and I live in Lagos`;
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample6() {
+            const output = document.getElementById('output6');
+            const outputText = document.getElementById('output6-text');
+            outputText.innerHTML = `Starting score: 0<br>After round 1: 10<br>After round 2: 25<br>Final score: 50`;
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        // Exercise 1
+        function checkExercise1() {
+            const code = document.getElementById('exercise1-code').value;
+            const result = document.getElementById('exercise1-result');
+
+            // Simple check for required elements
+            const hasYourName = code.includes('your_name');
+            const hasYourAge = code.includes('your_age');
+            const hasYourCity = code.includes('your_city');
+            const hasPrint = code.includes('print');
+            const hasInterpolation = code.includes('{') && code.includes('}');
+
+            if (hasYourName && hasYourAge && hasYourCity && hasPrint && hasInterpolation) {
+                result.className = 'exercise-result show success';
+                result.innerHTML = '<span class="result-icon">🎉</span><strong>Correct!</strong> Great job! You created all the variables and used string interpolation.';
+                updateProgress();
+            } else {
+                result.className = 'exercise-result show error';
+                let missing = [];
+                if (!hasYourName) missing.push('your_name variable');
+                if (!hasYourAge) missing.push('your_age variable');
+                if (!hasYourCity) missing.push('your_city variable');
+                if (!hasPrint) missing.push('print statement');
+                if (!hasInterpolation) missing.push('string interpolation {}');
+                result.innerHTML = '<span class="result-icon">❌</span><strong>Not quite!</strong> Missing: ' + missing.join(', ');
+            }
+        }
+
+        function showHint1() {
+            alert('Hint: Remember to use quotes for text ("name") but not for numbers (25). Use {variable} inside the print string!');
+        }
+
+        function showSolution1() {
+            document.getElementById('exercise1-code').value = `# Create your variables here
+your_name = "Alice"
+your_age = 25
+your_city = "Lagos"
+
+# Print your message here
+print "I'm {your_name}, {your_age} years old, from {your_city}"`;
+        }
+
+        // Exercise 2
+        function checkExercise2() {
+            const code = document.getElementById('exercise2-code').value;
+            const result = document.getElementById('exercise2-result');
+
+            const hasChange = code.includes('change');
+            const hasScore = code.includes('score');
+            const hasMultiplePrints = (code.match(/print/g) || []).length >= 3;
+            const hasNumbers = code.includes('10') && code.includes('15');
+
+            if (hasChange && hasScore && hasMultiplePrints && hasNumbers) {
+                result.className = 'exercise-result show success';
+                result.innerHTML = '<span class="result-icon">🎉</span><strong>Excellent!</strong> You correctly used the "change" keyword and updated the score multiple times!';
+                updateProgress();
+            } else {
+                result.className = 'exercise-result show error';
+                let missing = [];
+                if (!hasChange) missing.push('"change" keyword');
+                if (!hasScore) missing.push('score variable');
+                if (!hasMultiplePrints) missing.push('multiple print statements');
+                if (!hasNumbers) missing.push('correct numbers (10 and 15)');
+                result.innerHTML = '<span class="result-icon">❌</span><strong>Try again!</strong> Missing: ' + missing.join(', ');
+            }
+        }
+
+        function showHint2() {
+            alert('Hint: Use "change score = 0" to create a mutable variable. Then update it with "score = score + 10"');
+        }
+
+        function showSolution2() {
+            document.getElementById('exercise2-code').value = `# Create a changeable score variable
+change score = 0
+
+# Print starting score
+print "Starting score: {score}"
+
+# Add 10 points
+score = score + 10
+
+# Print score
+print "After first round: {score}"
+
+# Add 15 more points
+score = score + 15
+
+# Print final score
+print "Final score: {score}"`;
+        }
+
+        // Quiz
+        function selectQuizOption(element, isCorrect) {
+            // Remove all selections
+            document.querySelectorAll('.quiz-option').forEach(opt => {
+                opt.classList.remove('selected', 'correct', 'incorrect');
+            });
+
+            // Mark selected
+            element.classList.add('selected');
+
+            const feedback = document.getElementById('quiz1-feedback');
+
+            if (isCorrect) {
+                element.classList.add('correct');
+                feedback.className = 'quiz-feedback show';
+                feedback.style.background = '#d1fae5';
+                feedback.style.border = '2px solid #10b981';
+                feedback.style.color = '#065f46';
+                feedback.innerHTML = '<strong>✓ Correct!</strong> Variable names use underscores to separate words (snake_case).';
+                updateProgress();
+            } else {
+                element.classList.add('incorrect');
+                feedback.className = 'quiz-feedback show';
+                feedback.style.background = '#fee2e2';
+                feedback.style.border = '2px solid #ef4444';
+                feedback.style.color = '#991b1b';
+                feedback.innerHTML = '<strong>✗ Not quite.</strong> Try again! Variable names should use underscores, not dashes or spaces, and can\'t start with numbers.';
+            }
+        }
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
