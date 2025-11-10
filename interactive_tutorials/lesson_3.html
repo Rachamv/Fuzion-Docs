@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 3: Control Flow - Fuzion Interactive Tutorial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --bg-light: #f8f9fa;
+            --text-dark: #2c3e50;
+            --text-light: #6c757d;
+            --border: #e9ecef;
+            --code-bg: #2d2d2d;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--bg-light);
+        }
+
+        /* Header */
+        header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .progress-bar {
+            flex: 1;
+            max-width: 400px;
+            margin: 0 2rem;
+        }
+
+        .progress-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-track {
+            height: 8px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .lesson-badge {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        /* Main Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        /* Lesson Sidebar */
+        .lesson-nav {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .lesson-nav h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .lesson-list {
+            list-style: none;
+        }
+
+        .lesson-item {
+            margin-bottom: 0.75rem;
+        }
+
+        .lesson-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-dark);
+            transition: all 0.3s;
+        }
+
+        .lesson-link:hover {
+            background: var(--bg-light);
+        }
+
+        .lesson-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .lesson-link.completed {
+            color: var(--success);
+        }
+
+        .lesson-icon {
+            font-size: 1.2rem;
+        }
+
+        .lesson-number {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .lesson-link.active .lesson-number {
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* Main Content */
+        .content {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .lesson-header {
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .lesson-intro {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin: 2.5rem 0 1rem;
+            color: var(--text-dark);
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--text-dark);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+        }
+
+        .info-box.tip {
+            background: #ecfdf5;
+            border-color: var(--success);
+        }
+
+        .info-box.key-point {
+            background: #eff6ff;
+            border-color: var(--primary);
+        }
+
+        .info-box.warning {
+            background: #fffbeb;
+            border-color: var(--warning);
+        }
+
+        .info-box-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Code Examples */
+        .code-example {
+            background: var(--code-bg);
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: #252525;
+            border-bottom: 1px solid #3d3d3d;
+        }
+
+        .code-label {
+            color: #d4d4d4;
+            font-size: 0.85rem;
+        }
+
+        .run-btn {
+            padding: 0.4rem 1rem;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.3s;
+        }
+
+        .run-btn:hover {
+            background: #059669;
+        }
+
+        pre {
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #d4d4d4;
+        }
+
+        .inline-code {
+            background: #f1f3f5;
+            color: #e83e8c;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .keyword { color: #c586c0; }
+        .string { color: #ce9178; }
+        .function { color: #dcdcaa; }
+        .comment { color: #6a9955; }
+        .number { color: #b5cea8; }
+
+        .output-box {
+            background: #1a1a1a;
+            border-top: 1px solid #3d3d3d;
+            padding: 1rem;
+            color: #d4d4d4;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .output-box.show {
+            display: block;
+        }
+
+        .output-label {
+            color: var(--success);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Flow Chart */
+        .flowchart {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            color: white;
+        }
+
+        .flowchart h3 {
+            color: white;
+            margin-top: 0;
+        }
+
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .flow-box {
+            background: white;
+            color: var(--text-dark);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .flow-box.condition {
+            background: var(--warning);
+            color: white;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            padding: 2rem;
+        }
+
+        .flow-arrow {
+            font-size: 2rem;
+        }
+
+        .flow-branches {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+        }
+
+        /* Interactive Demo */
+        .interactive-demo {
+            background: #f0f9ff;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .demo-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .demo-controls {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .demo-input {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .demo-input label {
+            font-weight: 600;
+            min-width: 100px;
+        }
+
+        .demo-input input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .demo-input input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .demo-btn {
+            padding: 0.75rem 2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .demo-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .demo-output {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            min-height: 100px;
+            display: none;
+        }
+
+        .demo-output.show {
+            display: block;
+        }
+
+        .demo-output-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Interactive Exercise */
+        .exercise {
+            background: #f0f9ff;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .exercise-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .exercise-icon {
+            font-size: 2rem;
+        }
+
+        .exercise-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .exercise-prompt {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .code-editor {
+            background: var(--code-bg);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .code-editor textarea {
+            width: 100%;
+            min-height: 200px;
+            background: transparent;
+            border: none;
+            color: #d4d4d4;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            resize: vertical;
+            outline: none;
+            line-height: 1.6;
+        }
+
+        .exercise-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background: #dee2e6;
+        }
+
+        .exercise-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .exercise-result.show {
+            display: block;
+        }
+
+        .exercise-result.success {
+            background: #d1fae5;
+            border: 2px solid var(--success);
+            color: #065f46;
+        }
+
+        .exercise-result.error {
+            background: #fee2e2;
+            border: 2px solid var(--error);
+            color: #991b1b;
+        }
+
+        .result-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+
+        /* Quiz */
+        .quiz {
+            background: #fef3c7;
+            border: 2px solid var(--warning);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .quiz-question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .quiz-options {
+            list-style: none;
+        }
+
+        .quiz-option {
+            background: white;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--warning);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: #d1fae5;
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--error);
+            background: #fee2e2;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table code {
+            background: #f1f3f5;
+            color: var(--primary);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+        }
+
+        /* Navigation */
+        .lesson-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border);
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-dark);
+            transform: translateX(5px);
+        }
+
+        .nav-btn.prev:hover {
+            transform: translateX(-5px);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .lesson-nav {
+                position: relative;
+                top: 0;
+            }
+
+            .progress-bar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 2rem 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .exercise-actions {
+                flex-direction: column;
+            }
+
+            .flow-branches {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <a href="/" class="logo">
+                <span>⚡</span>
+                <span>Fuzion Tutorial</span>
+            </a>
+
+            <div class="progress-bar">
+                <div class="progress-label">Lesson 3 Progress: <span id="progress-percent">0%</span></div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+
+            <div>
+                <span class="lesson-badge">Beginner Track</span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Lesson Navigation -->
+        <aside class="lesson-nav">
+            <h3>Lessons</h3>
+            <ul class="lesson-list">
+                <li class="lesson-item">
+                    <a href="#lesson1" class="lesson-link completed">
+                        <span class="lesson-icon">✓</span>
+                        <div>
+                            <div>Variables & Types</div>
+                            <div class="lesson-number">Lesson 1</div>
+                        </div>
+                    </a>
+                </li>
+                <li class="lesson-item">
+                    <a href="#lesson2" class="lesson-link completed">
+                        <span class="lesson-icon">✓</span>
+                        <div>
+                            <div>Numbers & Math</div>
+                            <div class="lesson-number">Lesson 2</div>
+                        </div>
+                    </a>
+                </li>
+                <li class="lesson-item">
+                    <a href="#lesson3" class="lesson-link active">
+                        <span class="lesson-icon">🔀</span>
+                        <div>
+                            <div>Control Flow</div>
+                            <div class="lesson-number">Lesson 3</div>
+                        </div>
+                    </a>
+                </li>
+                <li class="lesson-item">
+                    <a href="#lesson4" class="lesson-link">
+                        <span class="lesson-icon">🔁</span>
+                        <div>
+                            <div>Loops</div>
+                            <div class="lesson-number">Lesson 4</div>
+                        </div>
+                    </a>
+                </li>
+                <li class="lesson-item">
+                    <a href="#lesson5" class="lesson-link">
+                        <span class="lesson-icon">📋</span>
+                        <div>
+                            <div>Lists</div>
+                            <div class="lesson-number">Lesson 5</div>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content">
+            <!-- Lesson Header -->
+            <div class="lesson-header">
+                <div class="lesson-badge">Lesson 3 of 30</div>
+                <h1>Control Flow: Making Decisions</h1>
+                <p class="lesson-intro">
+                    Learn how to make your programs smart by teaching them to make decisions based on conditions!
+                </p>
+            </div>
+
+            <!-- Section 1: Introduction to Control Flow -->
+            <section id="section1">
+                <h2>What is Control Flow?</h2>
+                <p>
+                    So far, our programs run from top to bottom, line by line. But real programs need to
+                    <strong>make decisions</strong> and take different actions based on conditions.
+                </p>
+
+                <p>Think about everyday decisions:</p>
+                <ul>
+                    <li><strong>If</strong> it's raining, bring an umbrella</li>
+                    <li><strong>If</strong> you're hungry, eat food</li>
+                    <li><strong>If</strong> the light is red, stop</li>
+                    <li><strong>If</strong> the light is green, go</li>
+                </ul>
+
+                <p>Programming uses the same logic!</p>
+
+                <div class="info-box key-point">
+                    <div class="info-box-title">🎯 Key Concept</div>
+                    <p>
+                        <strong>Control flow</strong> lets your program choose what to do based on conditions.
+                        It's like giving your code the ability to think!
+                    </p>
+                </div>
+            </section>
+
+            <!-- Section 2: The if Statement -->
+            <section id="section2">
+                <h2>The "if" Statement</h2>
+                <p>
+                    The most basic decision-making tool is the <span class="inline-code">if</span> statement.
+                </p>
+
+                <h3>Basic Syntax</h3>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Simple if statement</span>
+                        <button class="run-btn" onclick="runExample1()">▶ Run</button>
+                    </div>
+                    <pre><code>age = <span class="number">20</span>
+
+<span class="keyword">if</span> age >= <span class="number">18</span>:
+    <span class="keyword">print</span> <span class="string">"You can vote!"</span>
+
+<span class="keyword">print</span> <span class="string">"Program continues..."</span></code></pre>
+                    <div class="output-box" id="output1">
+                        <div class="output-label">Output:</div>
+                        <div id="output1-text"></div>
+                    </div>
+                </div>
+
+                <p><strong>How it works:</strong></p>
+                <ol>
+                    <li><span class="inline-code">if age >= 18:</span> - Check the condition</li>
+                    <li>If TRUE: run the indented code</li>
+                    <li>If FALSE: skip the indented code</li>
+                    <li>Continue with the rest of the program</li>
+                </ol>
+
+                <div class="info-box tip">
+                    <div class="info-box-title">💡 Indentation Matters!</div>
+                    <p>
+                        In Fuzion, indentation (spaces at the beginning) shows what code belongs to the if statement.
+                        Use 4 spaces or 1 tab.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Flowchart Visual -->
+            <div class="flowchart">
+                <h3>📊 How "if" Works (Flowchart)</h3>
+                <div class="flow-diagram">
+                    <div class="flow-box">Start</div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-box condition">Is age >= 18?</div>
+                    <div class="flow-branches">
+                        <div style="text-align: center;">
+                            <div style="margin-bottom: 0.5rem;">Yes ✓</div>
+                            <div class="flow-box">Print "You can vote!"</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="margin-bottom: 0.5rem;">No ✗</div>
+                            <div class="flow-box" style="background: transparent; border: 2px dashed white;">Skip</div>
+                        </div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-box">Continue program</div>
+                </div>
+            </div>
+
+            <!-- Section 3: Comparison Operators -->
+            <section id="section3">
+                <h2>Comparison Operators</h2>
+                <p>
+                    To make decisions, we need to compare values:
+                </p>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Operator</th>
+                            <th>Meaning</th>
+                            <th>Example</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>==</code></td>
+                            <td>Equal to</td>
+                            <td><code>5 == 5</code></td>
+                            <td>true</td>
+                        </tr>
+                        <tr>
+                            <td><code>!=</code></td>
+                            <td>Not equal to</td>
+                            <td><code>5 != 3</code></td>
+                            <td>true</td>
+                        </tr>
+                        <tr>
+                            <td><code>></code></td>
+                            <td>Greater than</td>
+                            <td><code>10 > 5</code></td>
+                            <td>true</td>
+                        </tr>
+                        <tr>
+                            <td><code><</code></td>
+                            <td>Less than</td>
+                            <td><code>3 < 7</code></td>
+                            <td>true</td>
+                        </tr>
+                        <tr>
+                            <td><code>>=</code></td>
+                            <td>Greater than or equal</td>
+                            <td><code>5 >= 5</code></td>
+                            <td>true</td>
+                        </tr>
+                        <tr>
+                            <td><code><=</code></td>
+                            <td>Less than or equal</td>
+                            <td><code>4 <= 6</code></td>
+                            <td>true</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Try Different Comparisons</h3>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Comparison examples</span>
+                        <button class="run-btn" onclick="runExample2()">▶ Run</button>
+                    </div>
+                    <pre><code>score = <span class="number">85</span>
+
+<span class="keyword">if</span> score >= <span class="number">90</span>:
+    <span class="keyword">print</span> <span class="string">"Excellent!"</span>
+
+<span class="keyword">if</span> score >= <span class="number">70</span>:
+    <span class="keyword">print</span> <span class="string">"Good job!"</span>
+
+<span class="keyword">if</span> score < <span class="number">50</span>:
+    <span class="keyword">print</span> <span class="string">"Need more practice"</span>
+
+<span class="keyword">if</span> score == <span class="number">100</span>:
+    <span class="keyword">print</span> <span class="string">"Perfect score!"</span></code></pre>
+                    <div class="output-box" id="output2">
+                        <div class="output-label">Output:</div>
+                        <div id="output2-text"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Interactive Demo -->
+            <div class="interactive-demo">
+                <div class="demo-title">🎮 Interactive Age Checker</div>
+                <div class="demo-controls">
+                    <div class="demo-input">
+                        <label for="age-input">Enter Age:</label>
+                        <input type="number" id="age-input" placeholder="e.g., 25">
+                        <button class="demo-btn" onclick="checkAge()">Check</button>
+                    </div>
+                </div>
+                <div class="demo-output" id="age-output">
+                    <div class="demo-output-text" id="age-result"></div>
+                </div>
+            </div>
+
+            <!-- Section 4: If-Else -->
+            <section id="section4">
+                <h2>The "if-else" Statement</h2>
+                <p>
+                    What if we want to do something when the condition is FALSE? Use <span class="inline-code">else</span>!
+                </p>
+
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">If-else example</span>
+                        <button class="run-btn" onclick="runExample3()">▶ Run</button>
+                    </div>
+                    <pre><code>age = <span class="number">16</span>
+
+<span class="keyword">if</span> age >= <span class="number">18</span>:
+    <span class="keyword">print</span> <span class="string">"You're an adult!"</span>
+<span class="keyword">else</span>:
+    <span class="keyword">print</span> <span class="string">"You're a minor"</span>
+
+<span class="keyword">print</span> <span class="string">"Have a nice day!"</span></code></pre>
+                    <div class="output-box" id="output3">
+                        <div class="output-label">Output:</div>
+                        <div id="output3-text"></div>
+                    </div>
+                </div>
+
+                <p><strong>How it works:</strong></p>
+                <ul>
+                    <li>If condition is TRUE: run the first block</li>
+                    <li>If condition is FALSE: run the else block</li>
+                    <li>One or the other ALWAYS runs (never both, never neither)</li>
+                </ul>
+
+                <div class="info-box key-point">
+                    <div class="info-box-title">🎯 Remember</div>
+                    <p>
+                        With <span class="inline-code">if-else</span>, you're guaranteeing that one of the two blocks will execute.
+                        It's like a fork in the road - you must take one path or the other!
+                    </p>
+                </div>
+            </section>
+
+            <!-- Section 5: Else-If Chains -->
+            <section id="section5">
+                <h2>The "else if" Chain</h2>
+                <p>
+                    Need to check multiple conditions? Use <span class="inline-code">else if</span>!
+                </p>
+
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Grade calculator</span>
+                        <button class="run-btn" onclick="runExample4()">▶ Run</button>
+                    </div>
+                    <pre><code>score = <span class="number">75</span>
+
+<span class="keyword">if</span> score >= <span class="number">90</span>:
+    <span class="keyword">print</span> <span class="string">"Grade: A"</span>
+<span class="keyword">else if</span> score >= <span class="number">80</span>:
+    <span class="keyword">print</span> <span class="string">"Grade: B"</span>
+<span class="keyword">else if</span> score >= <span class="number">70</span>:
+    <span class="keyword">print</span> <span class="string">"Grade: C"</span>
+<span class="keyword">else if</span> score >= <span class="number">60</span>:
+    <span class="keyword">print</span> <span class="string">"Grade: D"</span>
+<span class="keyword">else</span>:
+    <span class="keyword">print</span> <span class="string">"Grade: F"</span>
+
+<span class="keyword">print</span> <span class="string">"End of grading"</span></code></pre>
+                    <div class="output-box" id="output4">
+                        <div class="output-label">Output:</div>
+                        <div id="output4-text"></div>
+                    </div>
+                </div>
+
+                <p><strong>How it works:</strong></p>
+                <ol>
+                    <li>Check first condition (>= 90)</li>
+                    <li>If FALSE, check next condition (>= 80)</li>
+                    <li>If FALSE, check next condition (>= 70)</li>
+                    <li>Continue until one is TRUE or reach else</li>
+                    <li>Only ONE block runs, then exit</li>
+                </ol>
+
+                <div class="info-box warning">
+                    <div class="info-box-title">⚠️ Order Matters!</div>
+                    <p>
+                        Always put the most specific conditions first! If you check >= 60 before >= 90,
+                        a score of 95 would match >= 60 and never reach the >= 90 check.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Exercise 1 -->
+            <div class="exercise" id="exercise1">
+                <div class="exercise-header">
+                    <span class="exercise-icon">✏️</span>
+                    <div class="exercise-title">Exercise 1: Temperature Advisor</div>
+                </div>
+
+                <div class="exercise-prompt">
+                    <p><strong>Task:</strong> Create a program that gives advice based on temperature.</p>
+                    <p>Rules:</p>
+                    <ul>
+                        <li>If temperature > 30: print "It's hot! Stay hydrated!"</li>
+                        <li>If temperature >= 20 and <= 30: print "Perfect weather!"</li>
+                        <li>If temperature >= 10 and < 20: print "A bit cool, bring a jacket"</li>
+                        <li>If temperature < 10: print "It's cold! Bundle up!"</li>
+                    </ul>
+                    <p>Test with: <code>temperature = 25</code></p>
+                </div>
+
+                <div class="code-editor">
+                    <textarea id="exercise1-code" placeholder="Write your code here...">temperature = 25
+
+# Write your if-else if-else chain here
+
+</textarea>
+                </div>
+
+                <div class="exercise-actions">
+                    <button class="btn btn-primary" onclick="checkExercise1()">✓ Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint1()">💡 Show Hint</button>
+                    <button class="btn btn-secondary" onclick="showSolution1()">👁️ Show Solution</button>
+                </div>
+
+                <div class="exercise-result" id="exercise1-result"></div>
+            </div>
+
+            <!-- Section 6: Logical Operators -->
+            <section id="section6">
+                <h2>Combining Conditions</h2>
+                <p>
+                    Sometimes you need to check multiple conditions at once. Use logical operators!
+                </p>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Operator</th>
+                            <th>Meaning</th>
+                            <th>Example</th>
+                            <th>When TRUE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>and</code></td>
+                            <td>Both must be true</td>
+                            <td><code>age >= 18 and has_license</code></td>
+                            <td>Both conditions are true</td>
+                        </tr>
+                        <tr>
+                            <td><code>or</code></td>
+                            <td>At least one must be true</td>
+                            <td><code>is_weekend or is_holiday</code></td>
+                            <td>Either or both are true</td>
+                        </tr>
+                        <tr>
+                            <td><code>not</code></td>
+                            <td>Opposite/negation</td>
+                            <td><code>not is_raining</code></td>
+                            <td>Condition is false</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Using "and"</h3>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Both conditions must be true</span>
+                        <button class="run-btn" onclick="runExample5()">▶ Run</button>
+                    </div>
+                    <pre><code>age = <span class="number">20</span>
+has_license = <span class="keyword">true</span>
+
+<span class="keyword">if</span> age >= <span class="number">18</span> <span class="keyword">and</span> has_license:
+    <span class="keyword">print</span> <span class="string">"You can drive!"</span>
+<span class="keyword">else</span>:
+    <span class="keyword">print</span> <span class="string">"Sorry, you can't drive yet"</span></code></pre>
+                    <div class="output-box" id="output5">
+                        <div class="output-label">Output:</div>
+                        <div id="output5-text"></div>
+                    </div>
+                </div>
+
+                <h3>Using "or"</h3>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">At least one condition must be true</span>
+                        <button class="run-btn" onclick="runExample6()">▶ Run</button>
+                    </div>
+                    <pre><code>is_weekend = <span class="keyword">true</span>
+is_holiday = <span class="keyword">false</span>
+
+<span class="keyword">if</span> is_weekend <span class="keyword">or</span> is_holiday:
+    <span class="keyword">print</span> <span class="string">"No work today! 🎉"</span>
+<span class="keyword">else</span>:
+    <span class="keyword">print</span> <span class="string">"Time to work"</span></code></pre>
+                    <div class="output-box" id="output6">
+                        <div class="output-label">Output:</div>
+                        <div id="output6-text"></div>
+                    </div>
+                </div>
+
+                <h3>Using "not"</h3>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Negating a condition</span>
+                        <button class="run-btn" onclick="runExample7()">▶ Run</button>
+                    </div>
+                    <pre><code>is_raining = <span class="keyword">false</span>
+
+<span class="keyword">if</span> <span class="keyword">not</span> is_raining:
+    <span class="keyword">print</span> <span class="string">"Great day for a walk!"</span>
+<span class="keyword">else</span>:
+    <span class="keyword">print</span> <span class="string">"Better stay inside"</span></code></pre>
+                    <div class="output-box" id="output7">
+                        <div class="output-label">Output:</div>
+                        <div id="output7-text"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quiz -->
+            <div class="quiz" id="quiz1">
+                <div class="quiz-question">
+                    🤔 Quick Quiz: What will this code print?<br><br>
+                    <code style="background: white; padding: 0.5rem; border-radius: 4px; display: block;">
+                        age = 15<br>
+                        has_ticket = true<br><br>
+                        if age >= 18 or has_ticket:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;print "You can enter"<br>
+                        else:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;print "Entry denied"
+                    </code>
+                </div>
+                <ul class="quiz-options">
+                    <li class="quiz-option" onclick="selectQuizOption(this, true, 'quiz1')">
+                        A) <strong>"You can enter"</strong> (because has_ticket is true)
+                    </li>
+                    <li class="quiz-option" onclick="selectQuizOption(this, false, 'quiz1')">
+                        B) <strong>"Entry denied"</strong> (because age is less than 18)
+                    </li>
+                    <li class="quiz-option" onclick="selectQuizOption(this, false, 'quiz1')">
+                        C) <strong>Both messages</strong> (both conditions get checked)
+                    </li>
+                    <li class="quiz-option" onclick="selectQuizOption(this, false, 'quiz1')">
+                        D) <strong>Nothing</strong> (no condition is met)
+                    </li>
+                </ul>
+                <div class="quiz-feedback" id="quiz1-feedback"></div>
+            </div>
+
+            <!-- Section 7: Nested If Statements -->
+            <section id="section7">
+                <h2>Nested If Statements</h2>
+                <p>
+                    You can put if statements inside other if statements! This is called <strong>nesting</strong>.
+                </p>
+
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Nested conditions</span>
+                        <button class="run-btn" onclick="runExample8()">▶ Run</button>
+                    </div>
+                    <pre><code>age = <span class="number">25</span>
+has_license = <span class="keyword">true</span>
+has_car = <span class="keyword">true</span>
+
+<span class="keyword">if</span> age >= <span class="number">18</span>:
+    <span class="keyword">print</span> <span class="string">"You're old enough"</span>
+
+    <span class="keyword">if</span> has_license:
+        <span class="keyword">print</span> <span class="string">"You have a license"</span>
+
+        <span class="keyword">if</span> has_car:
+            <span class="keyword">print</span> <span class="string">"You can drive your car!"</span>
+        <span class="keyword">else</span>:
+            <span class="keyword">print</span> <span class="string">"You need a car"</span>
+    <span class="keyword">else</span>:
+        <span class="keyword">print</span> <span class="string">"You need a license"</span>
+<span class="keyword">else</span>:
+    <span class="keyword">print</span> <span class="string">"You're too young"</span></code></pre>
+                    <div class="output-box" id="output8">
+                        <div class="output-label">Output:</div>
+                        <div id="output8-text"></div>
+                    </div>
+                </div>
+
+                <div class="info-box tip">
+                    <div class="info-box-title">💡 Tip: Keep It Simple</div>
+                    <p>
+                        While nesting is powerful, too many levels can make code hard to read.
+                        Try to use <span class="inline-code">and</span>/<span class="inline-code">or</span> instead when possible!
+                    </p>
+                </div>
+            </section>
+
+            <!-- Exercise 2 -->
+            <div class="exercise" id="exercise2">
+                <div class="exercise-header">
+                    <span class="exercise-icon">✏️</span>
+                    <div class="exercise-title">Exercise 2: Movie Ticket Pricing</div>
+                </div>
+
+                <div class="exercise-prompt">
+                    <p><strong>Task:</strong> Calculate movie ticket price based on age and day.</p>
+                    <p>Pricing rules:</p>
+                    <ul>
+                        <li>Children (age < 12): $5</li>
+                        <li>Seniors (age >= 65): $7</li>
+                        <li>Adults on weekdays: $12</li>
+                        <li>Adults on weekends: $15</li>
+                    </ul>
+                    <p>Variables provided:</p>
+                    <pre style="background: white; padding: 1rem; border-radius: 4px;">age = 30
+is_weekend = false</pre>
+                    <p>Print the ticket price in format: <code>"Ticket price: $12"</code></p>
+                </div>
+
+                <div class="code-editor">
+                    <textarea id="exercise2-code" placeholder="Write your code here...">age = 30
+is_weekend = false
+
+# Write your if-else if chain here
+
+</textarea>
+                </div>
+
+                <div class="exercise-actions">
+                    <button class="btn btn-primary" onclick="checkExercise2()">✓ Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint2()">💡 Show Hint</button>
+                    <button class="btn btn-secondary" onclick="showSolution2()">👁️ Show Solution</button>
+                </div>
+
+                <div class="exercise-result" id="exercise2-result"></div>
+            </div>
+
+            <!-- Section 8: Ternary Operator -->
+            <section id="section8">
+                <h2>One-Line If (Ternary Operator)</h2>
+                <p>
+                    For simple conditions, you can write if-else in one line:
+                </p>
+
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Compact if-else</span>
+                        <button class="run-btn" onclick="runExample9()">▶ Run</button>
+                    </div>
+                    <pre><code>age = <span class="number">20</span>
+
+<span class="comment"># Long way:</span>
+<span class="keyword">if</span> age >= <span class="number">18</span>:
+    status = <span class="string">"adult"</span>
+<span class="keyword">else</span>:
+    status = <span class="string">"minor"</span>
+
+<span class="keyword">print</span> <span class="string">"Long way: {status}"</span>
+
+<span class="comment"># Short way (one line):</span>
+status = <span class="string">"adult"</span> <span class="keyword">if</span> age >= <span class="number">18</span> <span class="keyword">else</span> <span class="string">"minor"</span>
+
+<span class="keyword">print</span> <span class="string">"Short way: {status}"</span></code></pre>
+                    <div class="output-box" id="output9">
+                        <div class="output-label">Output:</div>
+                        <div id="output9-text"></div>
+                    </div>
+                </div>
+
+                <p><strong>Syntax:</strong> <code>value_if_true <span class="keyword">if</span> condition <span class="keyword">else</span> value_if_false</code></p>
+
+                <div class="info-box tip">
+                    <div class="info-box-title">💡 When to Use</div>
+                    <p>
+                        Use one-line if for simple assignments. If the logic is complex,
+                        use regular if-else for better readability!
+                    </p>
+                </div>
+            </section>
+
+            <!-- Lesson Summary -->
+            <section id="summary">
+                <h2>🎉 Lesson Complete!</h2>
+
+                <div class="info-box key-point">
+                    <div class="info-box-title">📝 What You Learned</div>
+                    <ul style="margin-left: 1.5rem; margin-top: 1rem;">
+                        <li>Using <span class="inline-code">if</span> to make decisions</li>
+                        <li>Using <span class="inline-code">else</span> for alternative actions</li>
+                        <li>Using <span class="inline-code">else if</span> for multiple conditions</li>
+                        <li>Comparison operators: <span class="inline-code">==, !=, >, <, >=, <=</span></li>
+                        <li>Logical operators: <span class="inline-code">and, or, not</span></li>
+                        <li>Nested if statements</li>
+                        <li>One-line if (ternary operator)</li>
+                    </ul>
+                </div>
+
+                <h3>Key Takeaways</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 1.5rem 0;">
+                    <div style="background: #ecfdf5; padding: 1.5rem; border-radius: 8px;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🧠</div>
+                        <strong>Decision Making</strong>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Your programs can now think and choose actions</p>
+                    </div>
+                    <div style="background: #eff6ff; padding: 1.5rem; border-radius: 8px;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔀</div>
+                        <strong>Multiple Paths</strong>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Handle different scenarios with ease</p>
+                    </div>
+                    <div style="background: #fef3c7; padding: 1.5rem; border-radius: 8px;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎯</div>
+                        <strong>Logical Thinking</strong>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Combine conditions for complex logic</p>
+                    </div>
+                </div>
+
+                <div class="info-box tip">
+                    <div class="info-box-title">🎯 Practice Projects</div>
+                    <p>Try building these on your own:</p>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>Password strength checker</li>
+                        <li>BMI calculator with health advice</li>
+                        <li>Simple quiz game</li>
+                        <li>Shipping cost calculator</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Navigation Footer -->
+            <div class="lesson-footer">
+                <a href="#lesson2" class="nav-btn prev">
+                    ← Lesson 2: Numbers & Math
+                </a>
+                <a href="#lesson4" class="nav-btn">
+                    Next: Loops →
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Progress tracking
+        let completedSections = 0;
+        const totalSections = 9;
+
+        function updateProgress() {
+            completedSections++;
+            const percent = Math.min(Math.round((completedSections / totalSections) * 100), 100);
+            document.getElementById('progress-percent').textContent = percent + '%';
+            document.getElementById('progress-fill').style.width = percent + '%';
+        }
+
+        // Interactive age checker
+        function checkAge() {
+            const age = parseInt(document.getElementById('age-input').value);
+            const output = document.getElementById('age-output');
+            const result = document.getElementById('age-result');
+
+            if (isNaN(age)) {
+                result.textContent = "Please enter a valid number!";
+            } else if (age >= 18) {
+                result.textContent = `Age ${age}: You're an adult! ✓`;
+            } else {
+                result.textContent = `Age ${age}: You're a minor`;
+            }
+
+            output.classList.add('show');
+        }
+
+        // Run examples
+        function runExample1() {
+            const output = document.getElementById('output1');
+            const outputText = document.getElementById('output1-text');
+            outputText.innerHTML = 'You can vote!<br>Program continues...';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample2() {
+            const output = document.getElementById('output2');
+            const outputText = document.getElementById('output2-text');
+            outputText.textContent = 'Good job!';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample3() {
+            const output = document.getElementById('output3');
+            const outputText = document.getElementById('output3-text');
+            outputText.innerHTML = "You're a minor<br>Have a nice day!";
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample4() {
+            const output = document.getElementById('output4');
+            const outputText = document.getElementById('output4-text');
+            outputText.innerHTML = 'Grade: C<br>End of grading';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample5() {
+            const output = document.getElementById('output5');
+            const outputText = document.getElementById('output5-text');
+            outputText.textContent = 'You can drive!';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample6() {
+            const output = document.getElementById('output6');
+            const outputText = document.getElementById('output6-text');
+            outputText.textContent = 'No work today! 🎉';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample7() {
+            const output = document.getElementById('output7');
+            const outputText = document.getElementById('output7-text');
+            outputText.textContent = 'Great day for a walk!';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample8() {
+            const output = document.getElementById('output8');
+            const outputText = document.getElementById('output8-text');
+            outputText.innerHTML = "You're old enough<br>You have a license<br>You can drive your car!";
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample9() {
+            const output = document.getElementById('output9');
+            const outputText = document.getElementById('output9-text');
+            outputText.innerHTML = 'Long way: adult<br>Short way: adult';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        // Exercise 1
+        function checkExercise1() {
+            const code = document.getElementById('exercise1-code').value;
+            const result = document.getElementById('exercise1-result');
+
+            const hasIf = code.includes('if');
+            const hasElseIf = code.includes('else if');
+            const hasElse = code.includes('else');
+            const hasTemp30 = code.includes('30');
+            const hasTemp20 = code.includes('20');
+            const hasTemp10 = code.includes('10');
+
+            if (hasIf && hasElseIf && hasElse && hasTemp30 && hasTemp20 && hasTemp10) {
+                result.className = 'exercise-result show success';
+                result.innerHTML = '<span class="result-icon">🎉</span><strong>Excellent!</strong> You correctly handled all temperature ranges!';
+                updateProgress();
+            } else {
+                result.className = 'exercise-result show error';
+                let missing = [];
+                if (!hasIf) missing.push('if statement');
+                if (!hasElseIf) missing.push('else if statements');
+                if (!hasElse) missing.push('else statement');
+                result.innerHTML = '<span class="result-icon">❌</span><strong>Not quite!</strong> Make sure you check all temperature ranges.';
+            }
+        }
+
+        function showHint1() {
+            alert('Hint: Start with the highest temperature (> 30), then check >= 20, then >= 10, and finally else for < 10');
+        }
+
+        function showSolution1() {
+            document.getElementById('exercise1-code').value = `temperature = 25
+
+# Write your if-else if-else chain here
+if temperature > 30:
+    print "It's hot! Stay hydrated!"
+else if temperature >= 20:
+    print "Perfect weather!"
+else if temperature >= 10:
+    print "A bit cool, bring a jacket"
+else:
+    print "It's cold! Bundle up!"`;
+        }
+
+        // Exercise 2
+        function checkExercise2() {
+            const code = document.getElementById('exercise2-code').value;
+            const result = document.getElementById('exercise2-result');
+
+            const hasAge12 = code.includes('12') || code.includes('< 12');
+            const hasAge65 = code.includes('65') || code.includes('>= 65');
+            const hasWeekend = code.includes('is_weekend') || code.includes('weekend');
+            const hasPrint = code.includes('print');
+
+            if (hasAge12 && hasAge65 && hasWeekend && hasPrint) {
+                result.className = 'exercise-result show success';
+                result.innerHTML = '<span class="result-icon">🎉</span><strong>Perfect!</strong> Your movie pricing system works correctly!';
+                updateProgress();
+            } else {
+                result.className = 'exercise-result show error';
+                let missing = [];
+                if (!hasAge12) missing.push('child pricing');
+                if (!hasAge65) missing.push('senior pricing');
+                if (!hasWeekend) missing.push('weekend check');
+                result.innerHTML = '<span class="result-icon">❌</span><strong>Try again!</strong> Missing: ' + missing.join(', ');
+            }
+        }
+
+        function showHint2() {
+            alert('Hint: Check age < 12 first, then age >= 65, then check is_weekend for adults');
+        }
+
+        function showSolution2() {
+            document.getElementById('exercise2-code').value = `age = 30
+is_weekend = false
+
+# Write your if-else if chain here
+if age < 12:
+    print "Ticket price: $5"
+else if age >= 65:
+    print "Ticket price: $7"
+else if is_weekend:
+    print "Ticket price: $15"
+else:
+    print "Ticket price: $12"`;
+        }
+
+        // Quiz
+        function selectQuizOption(element, isCorrect, quizId) {
+            const options = element.parentElement.querySelectorAll('.quiz-option');
+            options.forEach(opt => {
+                opt.classList.remove

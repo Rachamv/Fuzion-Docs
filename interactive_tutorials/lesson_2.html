@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 2: Numbers & Math - Fuzion Interactive Tutorial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --bg-light: #f8f9fa;
+            --text-dark: #2c3e50;
+            --text-light: #6c757d;
+            --border: #e9ecef;
+            --code-bg: #2d2d2d;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--bg-light);
+        }
+
+        /* Header */
+        header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .progress-bar {
+            flex: 1;
+            max-width: 400px;
+            margin: 0 2rem;
+        }
+
+        .progress-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-track {
+            height: 8px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .lesson-badge {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        /* Main Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        /* Lesson Sidebar */
+        .lesson-nav {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .lesson-nav h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .lesson-list {
+            list-style: none;
+        }
+
+        .lesson-item {
+            margin-bottom: 0.75rem;
+        }
+
+        .lesson-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-dark);
+            transition: all 0.3s;
+        }
+
+        .lesson-link:hover {
+            background: var(--bg-light);
+        }
+
+        .lesson-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .lesson-link.completed {
+            color: var(--success);
+        }
+
+        .lesson-icon {
+            font-size: 1.2rem;
+        }
+
+        .lesson-number {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .lesson-link.active .lesson-number {
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* Main Content */
+        .content {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .lesson-header {
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .lesson-intro {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin: 2.5rem 0 1rem;
+            color: var(--text-dark);
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--text-dark);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        ul {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+        }
+
+        .info-box.tip {
+            background: #ecfdf5;
+            border-color: var(--success);
+        }
+
+        .info-box.key-point {
+            background: #eff6ff;
+            border-color: var(--primary);
+        }
+
+        .info-box.warning {
+            background: #fffbeb;
+            border-color: var(--warning);
+        }
+
+        .info-box-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Code Examples */
+        .code-example {
+            background: var(--code-bg);
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: #252525;
+            border-bottom: 1px solid #3d3d3d;
+        }
+
+        .code-label {
+            color: #d4d4d4;
+            font-size: 0.85rem;
+        }
+
+        .run-btn {
+            padding: 0.4rem 1rem;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.3s;
+        }
+
+        .run-btn:hover {
+            background: #059669;
+        }
+
+        pre {
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #d4d4d4;
+        }
+
+        .inline-code {
+            background: #f1f3f5;
+            color: #e83e8c;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .keyword { color: #c586c0; }
+        .string { color: #ce9178; }
+        .function { color: #dcdcaa; }
+        .comment { color: #6a9955; }
+        .number { color: #b5cea8; }
+
+        .output-box {
+            background: #1a1a1a;
+            border-top: 1px solid #3d3d3d;
+            padding: 1rem;
+            color: #d4d4d4;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .output-box.show {
+            display: block;
+        }
+
+        .output-label {
+            color: var(--success);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Math Table */
+        .math-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .math-table th {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .math-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .math-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .math-table code {
+            background: #f1f3f5;
+            color: var(--primary);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+        }
+
+        /* Interactive Exercise */
+        .exercise {
+            background: #f0f9ff;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .exercise-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .exercise-icon {
+            font-size: 2rem;
+        }
+
+        .exercise-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .exercise-prompt {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .code-editor {
+            background: var(--code-bg);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .code-editor textarea {
+            width: 100%;
+            min-height: 150px;
+            background: transparent;
+            border: none;
+            color: #d4d4d4;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            resize: vertical;
+            outline: none;
+            line-height: 1.6;
+        }
+
+        .exercise-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background: #dee2e6;
+        }
+
+        .exercise-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .exercise-result.show {
+            display: block;
+        }
+
+        .exercise-result.success {
+            background: #d1fae5;
+            border: 2px solid var(--success);
+            color: #065f46;
+        }
+
+        .exercise-result.error {
+            background: #fee2e2;
+            border: 2px solid var(--error);
+            color: #991b1b;
+        }
+
+        .result-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+
+        /* Quiz */
+        .quiz {
+            background: #fef3c7;
+            border: 2px solid var(--warning);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .quiz-question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .quiz-options {
+            list-style: none;
+        }
+
+        .quiz-option {
+            background: white;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--warning);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: #d1fae5;
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--error);
+            background: #fee2e2;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+        }
+
+        /* Calculator Demo */
+        .calculator {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            border-radius: 12px;
+            color: white;
+            margin: 2rem 0;
+        }
+
+        .calculator h3 {
+            color: white;
+            margin-top: 0;
+        }
+
+        .calc-display {
+            background: rgba(255,255,255,0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 2rem;
+            text-align: right;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .calc-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calc-btn {
+            background: rgba(255,255,255,0.9);
+            color: var(--text-dark);
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .calc-btn:hover {
+            background: white;
+            transform: scale(1.05);
+        }
+
+        .calc-btn.operator {
+            background: var(--warning);
+            color: white;
+        }
+
+        .calc-btn.equals {
+            background: var(--success);
+            color: white;
+            grid-column: span 2;
+        }
+
+        /* Navigation */
+        .lesson-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border);
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-dark);
+            transform: translateX(5px);
+        }
+
+        .nav-btn.prev:hover {
+            transform: translateX(-5px);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .lesson-nav {
+                position: relative;
+                top: 0;
+            }
+
+            .progress-bar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 2rem 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .exercise-actions {
+                flex-direction: column;
+            }
+
+            .calc-buttons {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <a href="/" class="logo">
+                <span>⚡</span>
+                <span>Fuzion Tutorial</span>
+            </a>
+
+            <div class="progress-bar">
+                <div class="progress-label">Lesson 2 Progress: <span id="progress-percent">0%</span></div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+
+            <div>
+                <span class="lesson-badge">Beginner Track</span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Lesson Navigation -->
+        <aside class="lesson-nav">
+            <h3>Lessons</h3>
+            <ul class="lesson-list">
+                <li class="lesson-item">
+                    <a href="#lesson1" class="lesson-link completed">
+                        <span class="lesson-icon">✓</span>
+                        <div>
+                            <div>Variables & Types</div>
+                            <div class="lesson-number">Lesson 1</div>
+                        </div>
+                    </a>
+                </li>
+                <li class="lesson-item">
+                    <a href="#lesson2" class="lesson-link active">
+                        <span class="lesson-icon">🔢</span>
+                        <div>
+                            <div>Numbers & Math</div>
+                            <div class="lesson-number">Lesson 2</div>
+                        </div>
+                    </a>
+                </li>
+                <li class="lesson-item">
+                    <a href="#lesson3" class="lesson-link">
+                        <span class="lesson-icon">🔀</span>
+                        <div>
+                            <div>Control Flow</div>
+                            <div class="lesson-number">Lesson 3</div>
+                        </div>
+                    </a>
+                </li>
+                <li class="lesson-item">
+                    <a href="#lesson4" class="lesson-link">
+                        <span class="lesson-icon">🔁</span>
+                        <div>
+                            <div>Loops</div>
+                            <div class="lesson-number">Lesson 4</div>
+                        </div>
+                    </a>
+                </li>
+                <li class="lesson-item">
+                    <a href="#lesson5" class="lesson-link">
+                        <span class="lesson-icon">📋</span>
+                        <div>
+                            <div>Lists</div>
+                            <div class="lesson-number">Lesson 5</div>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content">
+            <!-- Lesson Header -->
+            <div class="lesson-header">
+                <div class="lesson-badge">Lesson 2 of 30</div>
+                <h1>Numbers & Math Operations</h1>
+                <p class="lesson-intro">
+                    Learn how to work with numbers, perform calculations, and build your first calculator!
+                </p>
+            </div>
+
+            <!-- Section 1: Basic Arithmetic -->
+            <section id="section1">
+                <h2>Basic Math Operations</h2>
+                <p>
+                    Fuzion makes math easy! You can perform calculations just like you would on a calculator.
+                </p>
+
+                <h3>The Basic Operations</h3>
+                <table class="math-table">
+                    <thead>
+                        <tr>
+                            <th>Operation</th>
+                            <th>Symbol</th>
+                            <th>Example</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Addition</strong></td>
+                            <td><code>+</code></td>
+                            <td><code>5 + 3</code></td>
+                            <td>8</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Subtraction</strong></td>
+                            <td><code>-</code></td>
+                            <td><code>10 - 4</code></td>
+                            <td>6</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Multiplication</strong></td>
+                            <td><code>*</code></td>
+                            <td><code>6 * 7</code></td>
+                            <td>42</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Division</strong></td>
+                            <td><code>/</code></td>
+                            <td><code>20 / 4</code></td>
+                            <td>5</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Power (Exponent)</strong></td>
+                            <td><code>**</code></td>
+                            <td><code>2 ** 3</code></td>
+                            <td>8 (2³)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Modulo (Remainder)</strong></td>
+                            <td><code>%</code></td>
+                            <td><code>10 % 3</code></td>
+                            <td>1</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Try It Yourself</h3>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Basic arithmetic</span>
+                        <button class="run-btn" onclick="runExample1()">▶ Run</button>
+                    </div>
+                    <pre><code><span class="keyword">print</span> <span class="number">5</span> + <span class="number">3</span>        <span class="comment"># Addition</span>
+<span class="keyword">print</span> <span class="number">10</span> - <span class="number">4</span>       <span class="comment"># Subtraction</span>
+<span class="keyword">print</span> <span class="number">6</span> * <span class="number">7</span>        <span class="comment"># Multiplication</span>
+<span class="keyword">print</span> <span class="number">20</span> / <span class="number">4</span>       <span class="comment"># Division</span>
+<span class="keyword">print</span> <span class="number">2</span> ** <span class="number">3</span>       <span class="comment"># Power (2 to the power of 3)</span>
+<span class="keyword">print</span> <span class="number">10</span> % <span class="number">3</span>       <span class="comment"># Modulo (remainder)</span></code></pre>
+                    <div class="output-box" id="output1">
+                        <div class="output-label">Output:</div>
+                        <div id="output1-text"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Using Variables in Math -->
+            <section id="section2">
+                <h2>Math with Variables</h2>
+                <p>
+                    You can store numbers in variables and use them in calculations:
+                </p>
+
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Variables in calculations</span>
+                        <button class="run-btn" onclick="runExample2()">▶ Run</button>
+                    </div>
+                    <pre><code><span class="comment"># Store prices</span>
+shirt_price = <span class="number">25</span>
+pants_price = <span class="number">40</span>
+shoes_price = <span class="number">60</span>
+
+<span class="comment"># Calculate total</span>
+total = shirt_price + pants_price + shoes_price
+<span class="keyword">print</span> <span class="string">"Total: ${total}"</span>
+
+<span class="comment"># Calculate with discount (20% off)</span>
+discount = total * <span class="number">0.2</span>
+final_price = total - discount
+<span class="keyword">print</span> <span class="string">"After 20% discount: ${final_price}"</span></code></pre>
+                    <div class="output-box" id="output2">
+                        <div class="output-label">Output:</div>
+                        <div id="output2-text"></div>
+                    </div>
+                </div>
+
+                <div class="info-box key-point">
+                    <div class="info-box-title">🎯 Key Point</div>
+                    <p>
+                        You can use variables in any math operation, just like regular numbers!
+                    </p>
+                </div>
+            </section>
+
+            <!-- Section 3: Order of Operations -->
+            <section id="section3">
+                <h2>Order of Operations</h2>
+                <p>
+                    Fuzion follows standard math rules (PEMDAS/BODMAS):
+                </p>
+                <ol>
+                    <li><strong>P</strong>arentheses / <strong>B</strong>rackets</li>
+                    <li><strong>E</strong>xponents / <strong>O</strong>rders (powers)</li>
+                    <li><strong>M</strong>ultiplication & <strong>D</strong>ivision (left to right)</li>
+                    <li><strong>A</strong>ddition & <strong>S</strong>ubtraction (left to right)</li>
+                </ol>
+
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Order matters!</span>
+                        <button class="run-btn" onclick="runExample3()">▶ Run</button>
+                    </div>
+                    <pre><code><span class="comment"># Without parentheses</span>
+result1 = <span class="number">5</span> + <span class="number">3</span> * <span class="number">2</span>
+<span class="keyword">print</span> <span class="string">"5 + 3 * 2 = {result1}"</span>   <span class="comment"># 11 (multiplication first)</span>
+
+<span class="comment"># With parentheses</span>
+result2 = (<span class="number">5</span> + <span class="number">3</span>) * <span class="number">2</span>
+<span class="keyword">print</span> <span class="string">"(5 + 3) * 2 = {result2}"</span> <span class="comment"># 16 (addition first)</span>
+
+<span class="comment"># Complex calculation</span>
+result3 = <span class="number">10</span> + <span class="number">5</span> * <span class="number">2</span> ** <span class="number">2</span> - <span class="number">3</span>
+<span class="keyword">print</span> <span class="string">"10 + 5 * 2 ** 2 - 3 = {result3}"</span> <span class="comment"># 27</span></code></pre>
+                    <div class="output-box" id="output3">
+                        <div class="output-label">Output:</div>
+                        <div id="output3-text"></div>
+                    </div>
+                </div>
+
+                <div class="info-box tip">
+                    <div class="info-box-title">💡 Pro Tip</div>
+                    <p>
+                        When in doubt, use parentheses <span class="inline-code">()</span> to make your calculations clear!
+                    </p>
+                </div>
+            </section>
+
+            <!-- Interactive Calculator -->
+            <div class="calculator">
+                <h3>🧮 Interactive Calculator</h3>
+                <p>Try it out! Click the buttons to perform calculations.</p>
+                <div class="calc-display" id="calc-display">0</div>
+                <div class="calc-buttons">
+                    <button class="calc-btn" onclick="calcInput('1')">1</button>
+                    <button class="calc-btn" onclick="calcInput('2')">2</button>
+                    <button class="calc-btn" onclick="calcInput('3')">3</button>
+                    <button class="calc-btn operator" onclick="calcInput('-')">−</button>
+
+                    <button class="calc-btn" onclick="calcInput('0')">0</button>
+                    <button class="calc-btn" onclick="calcClear()">C</button>
+                    <button class="calc-btn equals" onclick="calcEquals()">=</button>
+                    <button class="calc-btn operator" onclick="calcInput('+')">+</button>
+                </div>
+            </div>
+
+            <!-- Exercise 1 -->
+            <div class="exercise" id="exercise1">
+                <div class="exercise-header">
+                    <span class="exercise-icon">✏️</span>
+                    <div class="exercise-title">Exercise 1: Restaurant Bill Calculator</div>
+                </div>
+
+                <div class="exercise-prompt">
+                    <p><strong>Task:</strong> Calculate a restaurant bill with tax and tip.</p>
+                    <p>Given:</p>
+                    <ul>
+                        <li>Food cost: $50</li>
+                        <li>Tax rate: 8% (multiply by 0.08)</li>
+                        <li>Tip: 15% (multiply by 0.15)</li>
+                    </ul>
+                    <p>Calculate:</p>
+                    <ol>
+                        <li>Tax amount</li>
+                        <li>Subtotal (food + tax)</li>
+                        <li>Tip amount (15% of subtotal)</li>
+                        <li>Final total</li>
+                    </ol>
+                    <p><strong>Print each step with labels!</strong></p>
+                </div>
+
+                <div class="code-editor">
+                    <textarea id="exercise1-code" placeholder="Write your code here..."># Start with the food cost
+food_cost = 50
+
+# Calculate tax (8%)
+
+
+# Calculate subtotal
+
+
+# Calculate tip (15% of subtotal)
+
+
+# Calculate final total
+
+
+# Print results
+
+</textarea>
+                </div>
+
+                <div class="exercise-actions">
+                    <button class="btn btn-primary" onclick="checkExercise1()">✓ Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint1()">💡 Show Hint</button>
+                    <button class="btn btn-secondary" onclick="showSolution1()">👁️ Show Solution</button>
+                </div>
+
+                <div class="exercise-result" id="exercise1-result"></div>
+            </div>
+
+            <!-- Section 4: Integer vs Decimal -->
+            <section id="section4">
+                <h2>Integers vs Decimals</h2>
+                <p>
+                    Fuzion handles both whole numbers (integers) and decimal numbers (floats) automatically:
+                </p>
+
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Number types</span>
+                        <button class="run-btn" onclick="runExample4()">▶ Run</button>
+                    </div>
+                    <pre><code><span class="comment"># Integers (whole numbers)</span>
+age = <span class="number">25</span>
+year = <span class="number">2025</span>
+<span class="keyword">print</span> <span class="string">"Age: {age}, Year: {year}"</span>
+
+<span class="comment"># Decimals (floating-point numbers)</span>
+price = <span class="number">19.99</span>
+temperature = <span class="number">36.5</span>
+<span class="keyword">print</span> <span class="string">"Price: ${price}, Temp: {temperature}°C"</span>
+
+<span class="comment"># Mixed operations</span>
+result = <span class="number">10</span> / <span class="number">3</span>
+<span class="keyword">print</span> <span class="string">"10 divided by 3 = {result}"</span> <span class="comment"># 3.333...</span></code></pre>
+                    <div class="output-box" id="output4">
+                        <div class="output-label">Output:</div>
+                        <div id="output4-text"></div>
+                    </div>
+                </div>
+
+                <div class="info-box tip">
+                    <div class="info-box-title">💡 Did You Know?</div>
+                    <p>
+                        When you divide numbers, Fuzion automatically gives you a decimal result.
+                        You don't need to worry about integer vs float division!
+                    </p>
+                </div>
+            </section>
+
+            <!-- Section 5: Compound Operations -->
+            <section id="section5">
+                <h2>Updating Variables</h2>
+                <p>
+                    Remember from Lesson 1: use <span class="inline-code">change</span> to make variables mutable.
+                    Then you can update them using shortcuts:
+                </p>
+
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Shortcut operations</span>
+                        <button class="run-btn" onclick="runExample5()">▶ Run</button>
+                    </div>
+                    <pre><code><span class="comment"># Create a changeable variable</span>
+<span class="keyword">change</span> score = <span class="number">0</span>
+<span class="keyword">print</span> <span class="string">"Starting: {score}"</span>
+
+<span class="comment"># Long way</span>
+score = score + <span class="number">10</span>
+<span class="keyword">print</span> <span class="string">"After adding 10: {score}"</span>
+
+<span class="comment"># Add more</span>
+score = score + <span class="number">5</span>
+<span class="keyword">print</span> <span class="string">"After adding 5: {score}"</span>
+
+<span class="comment"># Subtract</span>
+score = score - <span class="number">3</span>
+<span class="keyword">print</span> <span class="string">"After subtracting 3: {score}"</span>
+
+<span class="comment"># Multiply</span>
+score = score * <span class="number">2</span>
+<span class="keyword">print</span> <span class="string">"After doubling: {score}"</span></code></pre>
+                    <div class="output-box" id="output5">
+                        <div class="output-label">Output:</div>
+                        <div id="output5-text"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quiz -->
+            <div class="quiz" id="quiz1">
+                <div class="quiz-question">
+                    🤔 Quick Quiz: What is the result of <code style="background: white; padding: 0.2rem 0.4rem; border-radius: 3px;">10 + 5 * 2</code>?
+                </div>
+                <ul class="quiz-options">
+                    <li class="quiz-option" onclick="selectQuizOption(this, false, 'quiz1')">
+                        A) <strong>30</strong> (adding first: 10 + 5 = 15, then 15 * 2 = 30)
+                    </li>
+                    <li class="quiz-option" onclick="selectQuizOption(this, true, 'quiz1')">
+                        B) <strong>20</strong> (multiplication first: 5 * 2 = 10, then 10 + 10 = 20)
+                    </li>
+                    <li class="quiz-option" onclick="selectQuizOption(this, false, 'quiz1')">
+                        C) <strong>25</strong> (some other calculation)
+                    </li>
+                    <li class="quiz-option" onclick="selectQuizOption(this, false, 'quiz1')">
+                        D) <strong>15</strong> (just 10 + 5)
+                    </li>
+                </ul>
+                <div class="quiz-feedback" id="quiz1-feedback"></div>
+            </div>
+
+            <!-- Section 6: Practical Examples -->
+            <section id="section6">
+                <h2>Real-World Examples</h2>
+
+                <h3>Example 1: Age Calculator</h3>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Calculate age from birth year</span>
+                        <button class="run-btn" onclick="runExample6()">▶ Run</button>
+                    </div>
+                    <pre><code>current_year = <span class="number">2025</span>
+birth_year = <span class="number">1998</span>
+
+age = current_year - birth_year
+<span class="keyword">print</span> <span class="string">"If you were born in {birth_year}, you are {age} years old in {current_year}"</span></code></pre>
+                    <div class="output-box" id="output6">
+                        <div class="output-label">Output:</div>
+                        <div id="output6-text"></div>
+                    </div>
+                </div>
+
+                <h3>Example 2: Temperature Converter</h3>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Convert Celsius to Fahrenheit</span>
+                        <button class="run-btn" onclick="runExample7()">▶ Run</button>
+                    </div>
+                    <pre><code><span class="comment"># Formula: F = (C × 9/5) + 32</span>
+celsius = <span class="number">25</span>
+fahrenheit = (celsius * <span class="number">9</span> / <span class="number">5</span>) + <span class="number">32</span>
+
+<span class="keyword">print</span> <span class="string">"{celsius}°C is {fahrenheit}°F"</span></code></pre>
+                    <div class="output-box" id="output7">
+                        <div class="output-label">Output:</div>
+                        <div id="output7-text"></div>
+                    </div>
+                </div>
+
+                <h3>Example 3: Circle Area</h3>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Calculate circle area</span>
+                        <button class="run-btn" onclick="runExample8()">▶ Run</button>
+                    </div>
+                    <pre><code><span class="comment"># Formula: Area = π × r²</span>
+pi = <span class="number">3.14159</span>
+radius = <span class="number">5</span>
+
+area = pi * radius ** <span class="number">2</span>
+<span class="keyword">print</span> <span class="string">"A circle with radius {radius} has area {area}"</span></code></pre>
+                    <div class="output-box" id="output8">
+                        <div class="output-label">Output:</div>
+                        <div id="output8-text"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Exercise 2 -->
+            <div class="exercise" id="exercise2">
+                <div class="exercise-header">
+                    <span class="exercise-icon">✏️</span>
+                    <div class="exercise-title">Exercise 2: Create a Tip Calculator</div>
+                </div>
+
+                <div class="exercise-prompt">
+                    <p><strong>Task:</strong> Build a tip calculator that works with any bill amount.</p>
+                    <p>Requirements:</p>
+                    <ul>
+                        <li>Bill amount: $75.50</li>
+                        <li>Calculate 15% tip</li>
+                        <li>Calculate 18% tip</li>
+                        <li>Calculate 20% tip</li>
+                        <li>Print all three options with the total for each</li>
+                    </ul>
+                    <p><strong>Example output:</strong></p>
+                    <pre style="background: white; padding: 1rem; border-radius: 4px;">Bill: $75.50
+15% tip: $11.33 - Total: $86.83
+18% tip: $13.59 - Total: $89.09
+20% tip: $15.10 - Total: $90.60</pre>
+                </div>
+
+                <div class="code-editor">
+                    <textarea id="exercise2-code" placeholder="Write your code here..."># Bill amount
+bill = 75.50
+
+# Calculate tips
+
+
+# Print results
+
+</textarea>
+                </div>
+
+                <div class="exercise-actions">
+                    <button class="btn btn-primary" onclick="checkExercise2()">✓ Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint2()">💡 Show Hint</button>
+                    <button class="btn btn-secondary" onclick="showSolution2()">👁️ Show Solution</button>
+                </div>
+
+                <div class="exercise-result" id="exercise2-result"></div>
+            </div>
+
+            <!-- Lesson Summary -->
+            <section id="summary">
+                <h2>🎉 Lesson Complete!</h2>
+
+                <div class="info-box key-point">
+                    <div class="info-box-title">📝 What You Learned</div>
+                    <ul style="margin-left: 1.5rem; margin-top: 1rem;">
+                        <li>Basic math operations: <span class="inline-code">+ - * / ** %</span></li>
+                        <li>Order of operations (PEMDAS/BODMAS)</li>
+                        <li>Using variables in calculations</li>
+                        <li>Integers vs decimals</li>
+                        <li>Updating variables with <span class="inline-code">change</span></li>
+                        <li>Real-world calculations (bills, temperature, area)</li>
+                    </ul>
+                </div>
+
+                <h3>Key Takeaways</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 1.5rem 0;">
+                    <div style="background: #ecfdf5; padding: 1.5rem; border-radius: 8px;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🧮</div>
+                        <strong>Math is Simple</strong>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Fuzion uses familiar math symbols and follows standard rules</p>
+                    </div>
+                    <div style="background: #eff6ff; padding: 1.5rem; border-radius: 8px;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔢</div>
+                        <strong>Variables in Math</strong>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Store values and reuse them in any calculation</p>
+                    </div>
+                    <div style="background: #fef3c7; padding: 1.5rem; border-radius: 8px;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📊</div>
+                        <strong>Real Applications</strong>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Use math to solve practical problems</p>
+                    </div>
+                </div>
+
+                <div class="info-box tip">
+                    <div class="info-box-title">🎯 Challenge Yourself!</div>
+                    <p>Try creating these on your own:</p>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>BMI calculator (weight / height²)</li>
+                        <li>Compound interest calculator</li>
+                        <li>Distance/speed/time calculator</li>
+                        <li>Currency converter</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Navigation Footer -->
+            <div class="lesson-footer">
+                <a href="#lesson1" class="nav-btn prev">
+                    ← Lesson 1: Variables
+                </a>
+                <a href="#lesson3" class="nav-btn">
+                    Next: Control Flow →
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Progress tracking
+        let completedSections = 0;
+        const totalSections = 8;
+
+        function updateProgress() {
+            completedSections++;
+            const percent = Math.min(Math.round((completedSections / totalSections) * 100), 100);
+            document.getElementById('progress-percent').textContent = percent + '%';
+            document.getElementById('progress-fill').style.width = percent + '%';
+        }
+
+        // Calculator logic
+        let calcExpression = '';
+        let calcDisplay = document.getElementById('calc-display');
+
+        function calcInput(value) {
+            if (calcExpression === '0') {
+                calcExpression = value;
+            } else {
+                calcExpression += value;
+            }
+            calcDisplay.textContent = calcExpression;
+        }
+
+        function calcClear() {
+            calcExpression = '';
+            calcDisplay.textContent = '0';
+        }
+
+        function calcEquals() {
+            try {
+                const result = eval(calcExpression.replace('×', '*').replace('÷', '/'));
+                calcDisplay.textContent = result;
+                calcExpression = result.toString();
+            } catch (e) {
+                calcDisplay.textContent = 'Error';
+                calcExpression = '';
+            }
+        }
+
+        // Run examples
+        function runExample1() {
+            const output = document.getElementById('output1');
+            const outputText = document.getElementById('output1-text');
+            outputText.innerHTML = '8<br>6<br>42<br>5<br>8<br>1';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample2() {
+            const output = document.getElementById('output2');
+            const outputText = document.getElementById('output2-text');
+            outputText.innerHTML = 'Total: $125<br>After 20% discount: $100';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample3() {
+            const output = document.getElementById('output3');
+            const outputText = document.getElementById('output3-text');
+            outputText.innerHTML = '5 + 3 * 2 = 11<br>(5 + 3) * 2 = 16<br>10 + 5 * 2 ** 2 - 3 = 27';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample4() {
+            const output = document.getElementById('output4');
+            const outputText = document.getElementById('output4-text');
+            outputText.innerHTML = 'Age: 25, Year: 2025<br>Price: $19.99, Temp: 36.5°C<br>10 divided by 3 = 3.3333333333333335';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample5() {
+            const output = document.getElementById('output5');
+            const outputText = document.getElementById('output5-text');
+            outputText.innerHTML = 'Starting: 0<br>After adding 10: 10<br>After adding 5: 15<br>After subtracting 3: 12<br>After doubling: 24';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample6() {
+            const output = document.getElementById('output6');
+            const outputText = document.getElementById('output6-text');
+            outputText.textContent = 'If you were born in 1998, you are 27 years old in 2025';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample7() {
+            const output = document.getElementById('output7');
+            const outputText = document.getElementById('output7-text');
+            outputText.textContent = '25°C is 77°F';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample8() {
+            const output = document.getElementById('output8');
+            const outputText = document.getElementById('output8-text');
+            outputText.textContent = 'A circle with radius 5 has area 78.53975';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        // Exercise 1
+        function checkExercise1() {
+            const code = document.getElementById('exercise1-code').value;
+            const result = document.getElementById('exercise1-result');
+
+            const hasTax = code.includes('0.08') || code.includes('tax');
+            const hasSubtotal = code.includes('subtotal');
+            const hasTip = code.includes('0.15') || code.includes('tip');
+            const hasTotal = code.includes('total');
+            const hasPrints = (code.match(/print/g) || []).length >= 4;
+
+            if (hasTax && hasSubtotal && hasTip && hasTotal && hasPrints) {
+                result.className = 'exercise-result show success';
+                result.innerHTML = '<span class="result-icon">🎉</span><strong>Excellent!</strong> You calculated all the values correctly!';
+                updateProgress();
+            } else {
+                result.className = 'exercise-result show error';
+                let missing = [];
+                if (!hasTax) missing.push('tax calculation');
+                if (!hasSubtotal) missing.push('subtotal');
+                if (!hasTip) missing.push('tip calculation');
+                if (!hasTotal) missing.push('total');
+                if (!hasPrints) missing.push('enough print statements');
+                result.innerHTML = '<span class="result-icon">❌</span><strong>Not quite!</strong> Missing: ' + missing.join(', ');
+            }
+        }
+
+        function showHint1() {
+            alert('Hint: Tax = food_cost * 0.08, Subtotal = food_cost + tax, Tip = subtotal * 0.15, Total = subtotal + tip');
+        }
+
+        function showSolution1() {
+            document.getElementById('exercise1-code').value = `# Start with the food cost
+food_cost = 50
+
+# Calculate tax (8%)
+tax = food_cost * 0.08
+
+# Calculate subtotal
+subtotal = food_cost + tax
+
+# Calculate tip (15% of subtotal)
+tip = subtotal * 0.15
+
+# Calculate final total
+total = subtotal + tip
+
+# Print results
+print "Food cost: $" + food_cost
+print "Tax (8%): $" + tax
+print "Subtotal: $" + subtotal
+print "Tip (15%): $" + tip
+print "Total: $" + total`;
+        }
+
+        // Exercise 2
+        function checkExercise2() {
+            const code = document.getElementById('exercise2-code').value;
+            const result = document.getElementById('exercise2-result');
+
+            const has15 = code.includes('0.15');
+            const has18 = code.includes('0.18');
+            const has20 = code.includes('0.20');
+            const hasPrints = (code.match(/print/g) || []).length >= 3;
+
+            if (has15 && has18 && has20 && hasPrints) {
+                result.className = 'exercise-result show success';
+                result.innerHTML = '<span class="result-icon">🎉</span><strong>Perfect!</strong> You calculated all three tip percentages!';
+                updateProgress();
+            } else {
+                result.className = 'exercise-result show error';
+                let missing = [];
+                if (!has15) missing.push('15% tip');
+                if (!has18) missing.push('18% tip');
+                if (!has20) missing.push('20% tip');
+                if (!hasPrints) missing.push('print statements');
+                result.innerHTML = '<span class="result-icon">❌</span><strong>Try again!</strong> Missing: ' + missing.join(', ');
+            }
+        }
+
+        function showHint2() {
+            alert('Hint: Multiply bill by 0.15 for 15%, 0.18 for 18%, and 0.20 for 20%. Then add tip to bill for total.');
+        }
+
+        function showSolution2() {
+            document.getElementById('exercise2-code').value = `# Bill amount
+bill = 75.50
+
+# Calculate tips
+tip_15 = bill * 0.15
+tip_18 = bill * 0.18
+tip_20 = bill * 0.20
+
+# Calculate totals
+total_15 = bill + tip_15
+total_18 = bill + tip_18
+total_20 = bill + tip_20
+
+# Print results
+print "Bill: ${bill}"
+print "15% tip: ${tip_15} - Total: ${total_15}"
+print "18% tip: ${tip_18} - Total: ${total_18}"
+print "20% tip: ${tip_20} - Total: ${total_20}"`;
+        }
+
+        // Quiz
+        function selectQuizOption(element, isCorrect, quizId) {
+            const options = element.parentElement.querySelectorAll('.quiz-option');
+            options.forEach(opt => {
+                opt.classList.remove('selected', 'correct', 'incorrect');
+            });
+
+            element.classList.add('selected');
+
+            const feedback = document.getElementById(quizId + '-feedback');
+
+            if (isCorrect) {
+                element.classList.add('correct');
+                feedback.className = 'quiz-feedback show';
+                feedback.style.background = '#d1fae5';
+                feedback.style.border = '2px solid #10b981';
+                feedback.style.color = '#065f46';
+                feedback.innerHTML = '<strong>✓ Correct!</strong> Multiplication happens before addition, so 5 * 2 = 10, then 10 + 10 = 20.';
+                updateProgress();
+            } else {
+                element.classList.add('incorrect');
+                feedback.className = 'quiz-feedback show';
+                feedback.style.background = '#fee2e2';
+                feedback.style.border = '2px solid #ef4444';
+                feedback.style.color = '#991b1b';
+                feedback.innerHTML = '<strong>✗ Not quite.</strong> Remember: multiplication happens before addition (order of operations).';
+            }
+        }
+    </script>
+</body>
+</html>btn" onclick="calcInput('7')">7</button>
+                    <button class="calc-btn" onclick="calcInput('8')">8</button>
+                    <button class="calc-btn" onclick="calcInput('9')">9</button>
+                    <button class="calc-btn operator" onclick="calcInput('/')">÷</button>
+
+                    <button class="calc-btn" onclick="calcInput('4')">4</button>
+                    <button class="calc-btn" onclick="calcInput('5')">5</button>
+                    <button class="calc-btn" onclick="calcInput('6')">6</button>
+                    <button class="calc-btn operator" onclick="calcInput('*')">×</button>
+
+                    <button class="calc-
