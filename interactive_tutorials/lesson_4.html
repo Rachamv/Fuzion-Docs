@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 4: Loops - Fuzion Interactive Tutorial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --bg-light: #f8f9fa;
+            --text-dark: #2c3e50;
+            --text-light: #6c757d;
+            --border: #e9ecef;
+            --code-bg: #2d2d2d;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--bg-light);
+        }
+
+        /* Header */
+        header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .progress-bar {
+            flex: 1;
+            max-width: 400px;
+            margin: 0 2rem;
+        }
+
+        .progress-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-track {
+            height: 8px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .lesson-badge {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        /* Main Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        /* Lesson Sidebar */
+        .lesson-nav {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .lesson-nav h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .lesson-list {
+            list-style: none;
+        }
+
+        .lesson-item {
+            margin-bottom: 0.75rem;
+        }
+
+        .lesson-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-dark);
+            transition: all 0.3s;
+        }
+
+        .lesson-link:hover {
+            background: var(--bg-light);
+        }
+
+        .lesson-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .lesson-link.completed {
+            color: var(--success);
+        }
+
+        .lesson-icon {
+            font-size: 1.2rem;
+        }
+
+        .lesson-number {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .lesson-link.active .lesson-number {
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* Main Content */
+        .content {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .lesson-header {
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .lesson-intro {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin: 2.5rem 0 1rem;
+            color: var(--text-dark);
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--text-dark);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+        }
+
+        .info-box.tip {
+            background: #ecfdf5;
+            border-color: var(--success);
+        }
+
+        .info-box.key-point {
+            background: #eff6ff;
+            border-color: var(--primary);
+        }
+
+        .info-box.warning {
+            background: #fffbeb;
+            border-color: var(--warning);
+        }
+
+        .info-box-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Code Examples */
+        .code-example {
+            background: var(--code-bg);
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: #252525;
+            border-bottom: 1px solid #3d3d3d;
+        }
+
+        .code-label {
+            color: #d4d4d4;
+            font-size: 0.85rem;
+        }
+
+        .run-btn {
+            padding: 0.4rem 1rem;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.3s;
+        }
+
+        .run-btn:hover {
+            background: #059669;
+        }
+
+        pre {
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #d4d4d4;
+        }
+
+        .inline-code {
+            background: #f1f3f5;
+            color: #e83e8c;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .keyword { color: #c586c0; }
+        .string { color: #ce9178; }
+        .function { color: #dcdcaa; }
+        .comment { color: #6a9955; }
+        .number { color: #b5cea8; }
+
+        .output-box {
+            background: #1a1a1a;
+            border-top: 1px solid #3d3d3d;
+            padding: 1rem;
+            color: #d4d4d4;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .output-box.show {
+            display: block;
+        }
+
+        .output-label {
+            color: var(--success);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Loop Visualization */
+        .loop-viz {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            color: white;
+        }
+
+        .loop-viz h3 {
+            color: white;
+            margin-top: 0;
+        }
+
+        .loop-animation {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .loop-step {
+            background: white;
+            color: var(--text-dark);
+            padding: 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .loop-step.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .viz-controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .viz-btn {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            color: var(--primary);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .viz-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table code {
+            background: #f1f3f5;
+            color: var(--primary);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+        }
+
+        /* Interactive Exercise */
+        .exercise {
+            background: #f0f9ff;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .exercise-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .exercise-icon {
+            font-size: 2rem;
+        }
+
+        .exercise-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .exercise-prompt {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .code-editor {
+            background: var(--code-bg);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .code-editor textarea {
+            width: 100%;
+            min-height: 200px;
+            background: transparent;
+            border: none;
+            color: #d4d4d4;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            resize: vertical;
+            outline: none;
+            line-height: 1.6;
+        }
+
+        .exercise-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background: #dee2e6;
+        }
+
+        .exercise-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .exercise-result.show {
+            display: block;
+        }
+
+        .exercise-result.success {
+            background: #d1fae5;
+            border: 2px solid var(--success);
+            color: #065f46;
+        }
+
+        .exercise-result.error {
+            background: #fee2e2;
+            border: 2px solid var(--error);
+            color: #991b1b;
+        }
+
+        .result-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+
+        /* Quiz */
+        .quiz {
+            background: #fef3c7;
+            border: 2px solid var(--warning);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .quiz-question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .quiz-options {
+            list-style: none;
+        }
+
+        .quiz-option {
+            background: white;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--warning);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: #d1fae5;
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--error);
+            background: #fee2e2;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+        }
+
+        /* Pattern Demo */
+        .pattern-demo {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            border: 2px solid var(--border);
+        }
+
+        .pattern-output {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-top: 1rem;
+        }
+
+        /* Navigation */
+        .lesson-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border);
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-dark);
+            transform: translateX(5px);
+        }
+
+        .nav-btn.prev:hover {
+            transform: translateX(-5px);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .lesson-nav {
+                position: relative;
+                top: 0;
+            }
+
+            .progress-bar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 2rem 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .exercise-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <a href="/" class="logo">
+                <span>⚡</span>
+                <span>Fuzion Tutorial</span>
+            </a>
+
+            <div class="progress-bar">
+                <div class="progress-label">Lesson 4 Progress: <span id="progress-percent">0%</span></div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+
+            <div>
+                <span class="lesson-badge">Beginner Track</span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Lesson Navigation -->
+        <aside class="lesson-nav">
+            <h3>Lessons</h3>
+            <ul class="lesson-list">
+                <li class="lesson-item">
+                    <a href="#lesson1" class="lesson-link completed">
+                        <span class="lesson-icon">✓</span>
+                        <div>
+                            <div>Variables & Types</div>
+                            <div class="lesson-number">Lesson 1</div>
+                        </div>
+                    </a>
+                </li>
+                <li class="lesson-item">
+                    <a href="#lesson2" class="lesson-link completed">
+                        <span class="lesson-icon">✓</span>
+                        <div>
+                            <div>Numbers & Math</div>
+                            <div class="lesson-number">Lesson 2</div>
+                        </div>
+                    </a>
+                </li>
+                <li class="lesson-item">
+                    <a href="#lesson3" class="lesson-link completed">
+                        <span class="lesson-icon">✓</span>
+                        <div>
+                            <div>Control Flow</div>
+                            <div class="lesson-number">Lesson 3</div>
+                        </div>
+                    </a>
+                </li>
+                <li class="lesson-item">
+                    <a href="#lesson4" class="lesson-link active">
+                        <span class="lesson-icon">🔁</span>
+                        <div>
+                            <div>Loops</div>
+                            <div class="lesson-number">Lesson 4</div>
+                        </div>
+                    </a>
+                </li>
+                <li class="lesson-item">
+                    <a href="#lesson5" class="lesson-link">
+                        <span class="lesson-icon">📋</span>
+                        <div>
+                            <div>Lists</div>
+                            <div class="lesson-number">Lesson 5</div>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content">
+            <!-- Lesson Header -->
+            <div class="lesson-header">
+                <div class="lesson-badge">Lesson 4 of 30</div>
+                <h1>Loops: Repeating Actions</h1>
+                <p class="lesson-intro">
+                    Learn how to make your programs repeat tasks automatically without writing the same code over and over!
+                </p>
+            </div>
+
+            <!-- Section 1: Why Loops? -->
+            <section id="section1">
+                <h2>Why Do We Need Loops?</h2>
+                <p>
+                    Imagine you want to print "Hello" 10 times. Would you write:
+                </p>
+
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">The tedious way (don't do this!)</span>
+                    </div>
+                    <pre><code><span class="keyword">print</span> <span class="string">"Hello"</span>
+<span class="keyword">print</span> <span class="string">"Hello"</span>
+<span class="keyword">print</span> <span class="string">"Hello"</span>
+<span class="keyword">print</span> <span class="string">"Hello"</span>
+<span class="keyword">print</span> <span class="string">"Hello"</span>
+<span class="keyword">print</span> <span class="string">"Hello"</span>
+<span class="keyword">print</span> <span class="string">"Hello"</span>
+<span class="keyword">print</span> <span class="string">"Hello"</span>
+<span class="keyword">print</span> <span class="string">"Hello"</span>
+<span class="keyword">print</span> <span class="string">"Hello"</span>
+<span class="comment"># This is exhausting! What if you need 100 times?</span></code></pre>
+                </div>
+
+                <p>
+                    That's terrible! <strong>Loops</strong> let you repeat code automatically:
+                </p>
+
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">The smart way (using a loop)</span>
+                        <button class="run-btn" onclick="runExample1()">▶ Run</button>
+                    </div>
+                    <pre><code><span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span> <span class="keyword">to</span> <span class="number">10</span>:
+    <span class="keyword">print</span> <span class="string">"Hello"</span></code></pre>
+                    <div class="output-box" id="output1">
+                        <div class="output-label">Output:</div>
+                        <div id="output1-text"></div>
+                    </div>
+                </div>
+
+                <div class="info-box key-point">
+                    <div class="info-box-title">🎯 Key Concept</div>
+                    <p>
+                        <strong>Loops</strong> let you run the same code multiple times without repeating yourself.
+                        They're essential for processing lists, counting, and automating repetitive tasks!
+                    </p>
+                </div>
+            </section>
+
+            <!-- Loop Visualization -->
+            <div class="loop-viz">
+                <h3>🔄 How Loops Work (Animation)</h3>
+                <div class="loop-animation" id="loop-animation">
+                    <div class="loop-step">Iteration 1: Print "Hello"</div>
+                    <div class="loop-step">Iteration 2: Print "Hello"</div>
+                    <div class="loop-step">Iteration 3: Print "Hello"</div>
+                    <div class="loop-step">Loop Complete!</div>
+                </div>
+                <div class="viz-controls">
+                    <button class="viz-btn" onclick="startLoopAnimation()">▶ Start Animation</button>
+                    <button class="viz-btn" onclick="resetLoopAnimation()">↻ Reset</button>
+                </div>
+            </div>
+
+            <!-- Section 2: For Loop Basics -->
+            <section id="section2">
+                <h2>The "for" Loop</h2>
+                <p>
+                    The <span class="inline-code">for</span> loop is perfect when you know how many times you want to repeat something.
+                </p>
+
+                <h3>Basic Range Loop</h3>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Count from 1 to 5</span>
+                        <button class="run-btn" onclick="runExample2()">▶ Run</button>
+                    </div>
+                    <pre><code><span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span> <span class="keyword">to</span> <span class="number">5</span>:
+    <span class="keyword">print</span> <span class="string">"Count: {i}"</span></code></pre>
+                    <div class="output-box" id="output2">
+                        <div class="output-label">Output:</div>
+                        <div id="output2-text"></div>
+                    </div>
+                </div>
+
+                <p><strong>How it works:</strong></p>
+                <ol>
+                    <li><span class="inline-code">i</span> starts at 1</li>
+                    <li>Runs the code inside the loop</li>
+                    <li><span class="inline-code">i</span> increases to 2</li>
+                    <li>Runs again... continues until <span class="inline-code">i</span> reaches 5</li>
+                    <li>After 5, the loop stops</li>
+                </ol>
+
+                <div class="info-box tip">
+                    <div class="info-box-title">💡 Loop Variable</div>
+                    <p>
+                        <span class="inline-code">i</span> is called the <strong>loop variable</strong>.
+                        You can name it anything (<span class="inline-code">count</span>, <span class="inline-code">num</span>, <span class="inline-code">x</span>),
+                        but <span class="inline-code">i</span> is traditional for "index" or "iteration".
+                    </p>
+                </div>
+            </section>
+
+            <!-- Section 3: Loop Examples -->
+            <section id="section3">
+                <h2>Practical Loop Examples</h2>
+
+                <h3>Example 1: Multiplication Table</h3>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Times table for 7</span>
+                        <button class="run-btn" onclick="runExample3()">▶ Run</button>
+                    </div>
+                    <pre><code><span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span> <span class="keyword">to</span> <span class="number">10</span>:
+    result = <span class="number">7</span> * i
+    <span class="keyword">print</span> <span class="string">"7 × {i} = {result}"</span></code></pre>
+                    <div class="output-box" id="output3">
+                        <div class="output-label">Output:</div>
+                        <div id="output3-text"></div>
+                    </div>
+                </div>
+
+                <h3>Example 2: Sum of Numbers</h3>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Add numbers from 1 to 10</span>
+                        <button class="run-btn" onclick="runExample4()">▶ Run</button>
+                    </div>
+                    <pre><code><span class="keyword">change</span> total = <span class="number">0</span>
+
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span> <span class="keyword">to</span> <span class="number">10</span>:
+    total = total + i
+    <span class="keyword">print</span> <span class="string">"Adding {i}: total is now {total}"</span>
+
+<span class="keyword">print</span> <span class="string">"Final sum: {total}"</span></code></pre>
+                    <div class="output-box" id="output4">
+                        <div class="output-label">Output:</div>
+                        <div id="output4-text"></div>
+                    </div>
+                </div>
+
+                <h3>Example 3: Countdown</h3>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Count backwards from 10 to 1</span>
+                        <button class="run-btn" onclick="runExample5()">▶ Run</button>
+                    </div>
+                    <pre><code><span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">10</span> <span class="keyword">to</span> <span class="number">1</span>:
+    <span class="keyword">print</span> i
+
+<span class="keyword">print</span> <span class="string">"Blast off! 🚀"</span></code></pre>
+                    <div class="output-box" id="output5">
+                        <div class="output-label">Output:</div>
+                        <div id="output5-text"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Exercise 1 -->
+            <div class="exercise" id="exercise1">
+                <div class="exercise-header">
+                    <span class="exercise-icon">✏️</span>
+                    <div class="exercise-title">Exercise 1: FizzBuzz Challenge</div>
+                </div>
+
+                <div class="exercise-prompt">
+                    <p><strong>Task:</strong> Create the classic FizzBuzz program!</p>
+                    <p>Rules: Loop from 1 to 15 and for each number:</p>
+                    <ul>
+                        <li>If divisible by 3: print "Fizz"</li>
+                        <li>If divisible by 5: print "Buzz"</li>
+                        <li>If divisible by both 3 and 5: print "FizzBuzz"</li>
+                        <li>Otherwise: print the number</li>
+                    </ul>
+                    <p><strong>Hint:</strong> Use <code>%</code> (modulo) to check divisibility. <code>i % 3 == 0</code> means divisible by 3.</p>
+                </div>
+
+                <div class="code-editor">
+                    <textarea id="exercise1-code" placeholder="Write your code here..."># FizzBuzz from 1 to 15
+for i in 1 to 15:
+    # Your code here
+
+</textarea>
+                </div>
+
+                <div class="exercise-actions">
+                    <button class="btn btn-primary" onclick="checkExercise1()">✓ Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint1()">💡 Show Hint</button>
+                    <button class="btn btn-secondary" onclick="showSolution1()">👁️ Show Solution</button>
+                </div>
+
+                <div class="exercise-result" id="exercise1-result"></div>
+            </div>
+
+            <!-- Section 4: While Loops -->
+            <section id="section4">
+                <h2>The "while" Loop</h2>
+                <p>
+                    Sometimes you don't know exactly how many times to loop. Use <span class="inline-code">while</span>
+                    to keep looping as long as a condition is true!
+                </p>
+
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Basic while loop</span>
+                        <button class="run-btn" onclick="runExample6()">▶ Run</button>
+                    </div>
+                    <pre><code><span class="keyword">change</span> count = <span class="number">1</span>
+
+<span class="keyword">while</span> count <= <span class="number">5</span>:
+    <span class="keyword">print</span> <span class="string">"Count is {count}"</span>
+    count = count + <span class="number">1</span>
+
+<span class="keyword">print</span> <span class="string">"Done!"</span></code></pre>
+                    <div class="output-box" id="output6">
+                        <div class="output-label">Output:</div>
+                        <div id="output6-text"></div>
+                    </div>
+                </div>
+
+                <div class="info-box warning">
+                    <div class="info-box-title">⚠️ Infinite Loop Warning!</div>
+                    <p>
+                        Be careful! If the condition never becomes false, your loop will run forever!
+                    </p>
+                    <pre style="background: white; padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem;"><code style="color: var(--text-dark);">change x = 1
+while x > 0:
+    print x
+    x = x + 1  # x keeps growing, always > 0. Infinite loop!</code></pre>
+                    <p style="margin-top: 0.5rem;">Always make sure your loop variable changes to eventually make the condition false!</p>
+                </div>
+
+                <h3>Example: Guessing Game Logic</h3>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Keep trying until correct</span>
+                        <button class="run-btn" onclick="runExample7()">▶ Run</button>
+                    </div>
+                    <pre><code>secret = <span class="number">7</span>
+<span class="keyword">change</span> guess = <span class="number">0</span>
+<span class="keyword">change</span> attempts = <span class="number">0</span>
+
+<span class="keyword">while</span> guess != secret:
+    attempts = attempts + <span class="number">1</span>
+    <span class="comment"># Simulating guesses: 3, 5, 7</span>
+    <span class="keyword">if</span> attempts == <span class="number">1</span>:
+        guess = <span class="number">3</span>
+    <span class="keyword">else if</span> attempts == <span class="number">2</span>:
+        guess = <span class="number">5</span>
+    <span class="keyword">else</span>:
+        guess = <span class="number">7</span>
+
+    <span class="keyword">print</span> <span class="string">"Attempt {attempts}: Guessed {guess}"</span>
+
+<span class="keyword">print</span> <span class="string">"Got it in {attempts} attempts!"</span></code></pre>
+                    <div class="output-box" id="output7">
+                        <div class="output-label">Output:</div>
+                        <div id="output7-text"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 5: For vs While -->
+            <section id="section5">
+                <h2>When to Use For vs While</h2>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Situation</th>
+                            <th>Use For Loop</th>
+                            <th>Use While Loop</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Known iterations</strong></td>
+                            <td style="background: #d1fae5;">✓ Yes - <code>for i in 1 to 10</code></td>
+                            <td>Possible, but for is clearer</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Unknown iterations</strong></td>
+                            <td>Not ideal</td>
+                            <td style="background: #d1fae5;">✓ Yes - <code>while condition</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Process a list</strong></td>
+                            <td style="background: #d1fae5;">✓ Yes - <code>for item in list</code></td>
+                            <td>Possible, but for is easier</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Until condition met</strong></td>
+                            <td>Not ideal</td>
+                            <td style="background: #d1fae5;">✓ Yes - <code>while not done</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box tip">
+                    <div class="info-box-title">💡 Quick Rule</div>
+                    <p>
+                        <strong>Use for:</strong> When you know how many times or have a list to process<br>
+                        <strong>Use while:</strong> When you're waiting for something to happen or a condition to be met
+                    </p>
+                </div>
+            </section>
+
+            <!-- Quiz -->
+            <div class="quiz" id="quiz1">
+                <div class="quiz-question">
+                    🤔 Quick Quiz: What does this code print?<br><br>
+                    <code style="background: white; padding: 0.5rem; border-radius: 4px; display: block;">
+                        change total = 0<br>
+                        for i in 1 to 3:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;total = total + i<br>
+                        print total
+                    </code>
+                </div>
+                <ul class="quiz-options">
+                    <li class="quiz-option" onclick="selectQuizOption(this, false, 'quiz1')">
+                        A) <strong>3</strong> (just the last value)
+                    </li>
+                    <li class="quiz-option" onclick="selectQuizOption(this, true, 'quiz1')">
+                        B) <strong>6</strong> (1 + 2 + 3 = 6)
+                    </li>
+                    <li class="quiz-option" onclick="selectQuizOption(this, false, 'quiz1')">
+                        C) <strong>1 2 3</strong> (each number separately)
+                    </li>
+                    <li class="quiz-option" onclick="selectQuizOption(this, false, 'quiz1')">
+                        D) <strong>0</strong> (initial value)
+                    </li>
+                </ul>
+                <div class="quiz-feedback" id="quiz1-feedback"></div>
+            </div>
+
+            <!-- Section 6: Loop Control -->
+            <section id="section6">
+                <h2>Controlling Loops: Break and Continue</h2>
+                <p>
+                    Sometimes you need to exit a loop early or skip certain iterations.
+                </p>
+
+                <h3>Break: Exit the Loop</h3>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Stop when you find it</span>
+                        <button class="run-btn" onclick="runExample8()">▶ Run</button>
+                    </div>
+                    <pre><code><span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span> <span class="keyword">to</span> <span class="number">10</span>:
+    <span class="keyword">print</span> <span class="string">"Checking {i}"</span>
+
+    <span class="keyword">if</span> i == <span class="number">5</span>:
+        <span class="keyword">print</span> <span class="string">"Found it! Stopping."</span>
+        <span class="keyword">break</span>
+
+<span class="keyword">print</span> <span class="string">"Loop finished"</span></code></pre>
+                    <div class="output-box" id="output8">
+                        <div class="output-label">Output:</div>
+                        <div id="output8-text"></div>
+                    </div>
+                </div>
+
+                <h3>Continue: Skip to Next Iteration</h3>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Skip even numbers</span>
+                        <button class="run-btn" onclick="runExample9()">▶ Run</button>
+                    </div>
+                    <pre><code><span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span> <span class="keyword">to</span> <span class="number">10</span>:
+    <span class="keyword">if</span> i % <span class="number">2</span> == <span class="number">0</span>:
+        <span class="keyword">continue</span>  <span class="comment"># Skip even numbers</span>
+
+    <span class="keyword">print</span> i  <span class="comment"># Only prints odd numbers</span></code></pre>
+                    <div class="output-box" id="output9">
+                        <div class="output-label">Output:</div>
+                        <div id="output9-text"></div>
+                    </div>
+                </div>
+
+                <div class="info-box key-point">
+                    <div class="info-box-title">🎯 Remember</div>
+                    <p>
+                        <strong>break:</strong> Exit the entire loop immediately<br>
+                        <strong>continue:</strong> Skip the rest of this iteration and move to the next one
+                    </p>
+                </div>
+            </section>
+
+            <!-- Section 7: Nested Loops -->
+            <section id="section7">
+                <h2>Nested Loops</h2>
+                <p>
+                    You can put loops inside other loops! This is called <strong>nesting</strong>.
+                </p>
+
+                <div class="code-example">
+                    <div class="code-header">
+                        <span class="code-label">Multiplication table (all combinations)</span>
+                        <button class="run-btn" onclick="runExample10()">▶ Run</button>
+                    </div>
+                    <pre><code><span class="keyword">for</span> row <span class="keyword">in</span> <span class="number">1</span> <span class="keyword">to</span> <span class="number">3</span>:
+    <span class="keyword">for</span> col <span class="keyword">in</span> <span class="number">1</span> <span class="keyword">to</span> <span class="number">3</span>:
+        result = row * col
+        <span class="keyword">print</span> <span class="string">"{row} × {col} = {result}"</span>
+    <span class="keyword">print</span> <span class="string">"---"</span></code></pre>
+                    <div class="output-box" id="output10">
+                        <div class="output-label">Output:</div>
+                        <div id="output10-text"></div>
+                    </div>
+                </div>
+
+                <h3>Pattern Example: Star Triangle</h3>
+                <div class="pattern-demo">
+                    <h3>Creating Patterns with Nested Loops</h3>
+                    <div class="code-example">
+                        <div class="code-header">
+                            <span class="code-label">Print a triangle</span>
+                            <button class="run-btn" onclick="runExample11()">▶ Run</button>
+                        </div>
+                        <pre><code><span class="keyword">for</span> row <span class="keyword">in</span> <span class="number">1</span> <span class="keyword">to</span> <span class="number">5</span>:
+    <span class="keyword">for</span> col <span class="keyword">in</span> <span class="number">1</span> <span class="keyword">to</span> row:
+        <span class="keyword">print</span> <span class="string">"*"</span>  <span class="comment"># Print without newline</span>
+    <span class="keyword">print</span> <span class="string">""</span>      <span class="comment"># New line after each row</span></code></pre>
+                        <div class="output-box" id="output11">
+                            <div class="output-label">Output:</div>
+                            <div class="pattern-output" id="output11-text"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Exercise 2 -->
+            <div class="exercise" id="exercise2">
+                <div class="exercise-header">
+                    <span class="exercise-icon">✏️</span>
+                    <div class="exercise-title">Exercise 2: Prime Number Checker</div>
+                </div>
+
+                <div class="exercise-prompt">
+                    <p><strong>Task:</strong> Find all prime numbers between 2 and 20.</p>
+                    <p>A prime number is only divisible by 1 and itself.</p>
+                    <p>Steps:</p>
+                    <ol>
+                        <li>Loop through numbers 2 to 20</li>
+                        <li>For each number, check if it's divisible by any number from 2 to (number - 1)</li>
+                        <li>If no divisors found, it's prime - print it!</li>
+                    </ol>
+                    <p><strong>Expected output:</strong> 2, 3, 5, 7, 11, 13, 17, 19</p>
+                </div>
+
+                <div class="code-editor">
+                    <textarea id="exercise2-code" placeholder="Write your code here..."># Find primes from 2 to 20
+
+</textarea>
+                </div>
+
+                <div class="exercise-actions">
+                    <button class="btn btn-primary" onclick="checkExercise2()">✓ Check Answer</button>
+                    <button class="btn btn-secondary" onclick="showHint2()">💡 Show Hint</button>
+                    <button class="btn btn-secondary" onclick="showSolution2()">👁️ Show Solution</button>
+                </div>
+
+                <div class="exercise-result" id="exercise2-result"></div>
+            </div>
+
+            <!-- Lesson Summary -->
+            <section id="summary">
+                <h2>🎉 Lesson Complete!</h2>
+
+                <div class="info-box key-point">
+                    <div class="info-box-title">📝 What You Learned</div>
+                    <ul style="margin-left: 1.5rem; margin-top: 1rem;">
+                        <li><span class="inline-code">for</span> loops for known iterations</li>
+                        <li><span class="inline-code">while</span> loops for conditional repeating</li>
+                        <li>Loop variables and ranges (<span class="inline-code">1 to 10</span>)</li>
+                        <li><span class="inline-code">break</span> to exit loops early</li>
+                        <li><span class="inline-code">continue</span> to skip iterations</li>
+                        <li>Nested loops for complex patterns</li>
+                        <li>Practical applications (counters, sums, patterns)</li>
+                    </ul>
+                </div>
+
+                <h3>Key Takeaways</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 1.5rem 0;">
+                    <div style="background: #ecfdf5; padding: 1.5rem; border-radius: 8px;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔁</div>
+                        <strong>Automation</strong>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Repeat any task as many times as needed</p>
+                    </div>
+                    <div style="background: #eff6ff; padding: 1.5rem; border-radius: 8px;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚡</div>
+                        <strong>Efficiency</strong>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Write once, execute many times</p>
+                    </div>
+                    <div style="background: #fef3c7; padding: 1.5rem; border-radius: 8px;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎯</div>
+                        <strong>Control</strong>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Break, continue, and nest for complex logic</p>
+                    </div>
+                </div>
+
+                <div class="info-box tip">
+                    <div class="info-box-title">🎯 Practice Projects</div>
+                    <p>Try building these on your own:</p>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>Factorial calculator (5! = 5×4×3×2×1)</li>
+                        <li>Password validator (check strength)</li>
+                        <li>Number pyramid pattern</li>
+                        <li>Fibonacci sequence generator</li>
+                        <li>Simple text-based game with turns</li>
+                    </ul>
+                </div>
+
+                <div class="info-box key-point">
+                    <div class="info-box-title">🚀 You Now Have Core Skills!</div>
+                    <p>
+                        Congratulations! You've learned the <strong>four fundamental concepts</strong> of programming:
+                    </p>
+                    <ol style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li><strong>Variables</strong> - Store data</li>
+                        <li><strong>Math</strong> - Calculate and process</li>
+                        <li><strong>Control Flow</strong> - Make decisions</li>
+                        <li><strong>Loops</strong> - Repeat actions</li>
+                    </ol>
+                    <p style="margin-top: 1rem;">
+                        With these skills, you can build almost any program! The next lessons will teach you
+                        how to organize and structure your code better.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Navigation Footer -->
+            <div class="lesson-footer">
+                <a href="#lesson3" class="nav-btn prev">
+                    ← Lesson 3: Control Flow
+                </a>
+                <a href="#lesson5" class="nav-btn">
+                    Next: Lists →
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Progress tracking
+        let completedSections = 0;
+        const totalSections = 11;
+
+        function updateProgress() {
+            completedSections++;
+            const percent = Math.min(Math.round((completedSections / totalSections) * 100), 100);
+            document.getElementById('progress-percent').textContent = percent + '%';
+            document.getElementById('progress-fill').style.width = percent + '%';
+        }
+
+        // Loop animation
+        function startLoopAnimation() {
+            const steps = document.querySelectorAll('.loop-step');
+            steps.forEach((step, index) => {
+                setTimeout(() => {
+                    step.classList.add('active');
+                }, index * 800);
+            });
+        }
+
+        function resetLoopAnimation() {
+            document.querySelectorAll('.loop-step').forEach(step => {
+                step.classList.remove('active');
+            });
+        }
+
+        // Run examples
+        function runExample1() {
+            const output = document.getElementById('output1');
+            const outputText = document.getElementById('output1-text');
+            let result = '';
+            for (let i = 0; i < 10; i++) {
+                result += 'Hello<br>';
+            }
+            outputText.innerHTML = result;
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample2() {
+            const output = document.getElementById('output2');
+            const outputText = document.getElementById('output2-text');
+            let result = '';
+            for (let i = 1; i <= 5; i++) {
+                result += `Count: ${i}<br>`;
+            }
+            outputText.innerHTML = result;
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample3() {
+            const output = document.getElementById('output3');
+            const outputText = document.getElementById('output3-text');
+            let result = '';
+            for (let i = 1; i <= 10; i++) {
+                result += `7 × ${i} = ${7 * i}<br>`;
+            }
+            outputText.innerHTML = result;
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample4() {
+            const output = document.getElementById('output4');
+            const outputText = document.getElementById('output4-text');
+            let result = '';
+            let total = 0;
+            for (let i = 1; i <= 10; i++) {
+                total += i;
+                result += `Adding ${i}: total is now ${total}<br>`;
+            }
+            result += `Final sum: ${total}`;
+            outputText.innerHTML = result;
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample5() {
+            const output = document.getElementById('output5');
+            const outputText = document.getElementById('output5-text');
+            let result = '';
+            for (let i = 10; i >= 1; i--) {
+                result += `${i}<br>`;
+            }
+            result += 'Blast off! 🚀';
+            outputText.innerHTML = result;
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample6() {
+            const output = document.getElementById('output6');
+            const outputText = document.getElementById('output6-text');
+            let result = '';
+            let count = 1;
+            while (count <= 5) {
+                result += `Count is ${count}<br>`;
+                count++;
+            }
+            result += 'Done!';
+            outputText.innerHTML = result;
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample7() {
+            const output = document.getElementById('output7');
+            const outputText = document.getElementById('output7-text');
+            outputText.innerHTML = 'Attempt 1: Guessed 3<br>Attempt 2: Guessed 5<br>Attempt 3: Guessed 7<br>Got it in 3 attempts!';
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample8() {
+            const output = document.getElementById('output8');
+            const outputText = document.getElementById('output8-text');
+            let result = '';
+            for (let i = 1; i <= 10; i++) {
+                result += `Checking ${i}<br>`;
+                if (i === 5) {
+                    result += 'Found it! Stopping.<br>';
+                    break;
+                }
+            }
+            result += 'Loop finished';
+            outputText.innerHTML = result;
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample9() {
+            const output = document.getElementById('output9');
+            const outputText = document.getElementById('output9-text');
+            let result = '';
+            for (let i = 1; i <= 10; i++) {
+                if (i % 2 === 0) continue;
+                result += `${i}<br>`;
+            }
+            outputText.innerHTML = result;
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample10() {
+            const output = document.getElementById('output10');
+            const outputText = document.getElementById('output10-text');
+            let result = '';
+            for (let row = 1; row <= 3; row++) {
+                for (let col = 1; col <= 3; col++) {
+                    result += `${row} × ${col} = ${row * col}<br>`;
+                }
+                result += '---<br>';
+            }
+            outputText.innerHTML = result;
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        function runExample11() {
+            const output = document.getElementById('output11');
+            const outputText = document.getElementById('output11-text');
+            let result = '';
+            for (let row = 1; row <= 5; row++) {
+                for (let col = 1; col <= row; col++) {
+                    result += '*';
+                }
+                result += '<br>';
+            }
+            outputText.innerHTML = result;
+            output.classList.add('show');
+            updateProgress();
+        }
+
+        // Exercise 1
+        function checkExercise1() {
+            const code = document.getElementById('exercise1-code').value;
+            const result = document.getElementById('exercise1-result');
+
+            const hasFor = code.includes('for');
+            const hasIf = code.includes('if');
+            const hasFizz = code.includes('Fizz');
+            const hasBuzz = code.includes('Buzz');
+            const hasModulo = code.includes('%');
+
+            if (hasFor && hasIf && hasFizz && hasBuzz && hasModulo) {
+                result.className = 'exercise-result show success';
+                result.innerHTML = '<span class="result-icon">🎉</span><strong>Excellent!</strong> Your FizzBuzz works perfectly!';
+                updateProgress();
+            } else {
+                result.className = 'exercise-result show error';
+                let missing = [];
+                if (!hasFor) missing.push('for loop');
+                if (!hasIf) missing.push('if statements');
+                if (!hasFizz || !hasBuzz) missing.push('Fizz/Buzz outputs');
+                if (!hasModulo) missing.push('modulo operator (%)');
+                result.innerHTML = '<span class="result-icon">❌</span><strong>Not quite!</strong> Missing: ' + missing.join(', ');
+            }
+        }
+
+        function showHint1() {
+            alert('Hint: Check divisible by 15 first (both 3 and 5), then 3, then 5, then just print the number');
+        }
+
+        function showSolution1() {
+            document.getElementById('exercise1-code').value = `# FizzBuzz from 1 to 15
+for i in 1 to 15:
+    if i % 15 == 0:
+        print "FizzBuzz"
+    else if i % 3 == 0:
+        print "Fizz"
+    else if i % 5 == 0:
+        print "Buzz"
+    else:
+        print i`;
+        }
+
+        // Exercise 2
+        function checkExercise2() {
+            const code = document.getElementById('exercise2-code').value;
+            const result = document.getElementById('exercise2-result');
+
+            const hasOuterLoop = code.includes('for') || code.includes('while');
+            const hasInnerLoop = (code.match(/for/g) || []).length >= 2 || (code.match(/while/g) || []).length >= 2;
+            const hasModulo = code.includes('%');
+            const hasPrint = code.includes('print');
+
+            if (hasOuterLoop && hasInnerLoop && hasModulo && hasPrint) {
+                result.className = 'exercise-result show success';
+                result.innerHTML = '<span class="result-icon">🎉</span><strong>Perfect!</strong> You found all the prime numbers!';
+                updateProgress();
+            } else {
+                result.className = 'exercise-result show error';
+                let missing = [];
+                if (!hasOuterLoop) missing.push('outer loop');
+                if (!hasInnerLoop) missing.push('inner loop (nested)');
+                if (!hasModulo) missing.push('divisibility check (%)');
+                result.innerHTML = '<span class="result-icon">❌</span><strong>Try again!</strong> Missing: ' + missing.join(', ');
+            }
+        }
+
+        function showHint2() {
+            alert('Hint: For each number, use a nested loop to test if it has any divisors. Use a flag variable to track if prime.');
+        }
+
+        function showSolution2() {
+            document.getElementById('exercise2-code').value = `# Find primes from 2 to 20
+for num in 2 to 20:
+    change is_prime = true
+
+    # Check if num has any divisors
+    for divisor in 2 to num - 1:
+        if num % divisor == 0:
+            is_prime = false
+            break
+
+    # If still prime, print it
+    if is_prime:
+        print num`;
+        }
+
+        // Quiz
+        function selectQuizOption(element, isCorrect, quizId) {
+            const options = element.parentElement.querySelectorAll('.quiz-option');
+            options.forEach(opt => {
+                opt.classList.remove('selected', 'correct', 'incorrect');
+            });
+
+            element.classList.add('selected');
+
+            const feedback = document.getElementById(quizId + '-feedback');
+
+            if (isCorrect) {
+                element.classList.add('correct');
+                feedback.className = 'quiz-feedback show';
+                feedback.style.background = '#d1fae5';
+                feedback.style.border = '2px solid #10b981';
+                feedback.style.color = '#065f46';
+                feedback.innerHTML = '<strong>✓ Correct!</strong> The loop adds 1, then 2, then 3 to total: 0 + 1 = 1, 1 + 2 = 3, 3 + 3 = 6!';
+                updateProgress();
+            } else {
+                element.classList.add('incorrect');
+                feedback.className = 'quiz-feedback show';
+                feedback.style.background = '#fee2e2';
+                feedback.style.border = '2px solid #ef4444';
+                feedback.style.color = '#991b1b';
+                feedback.innerHTML = '<strong>✗ Not quite.</strong> Trace through each iteration: i=1 adds 1, i=2 adds 2, i=3 adds 3. Total = 1+2+3 = 6';
+            }
+        }
+    </script>
+</body>
+</html>
