@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuzion Deep Dive Series - Complete Index</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --bg-light: #f8f9fa;
+            --text-dark: #2c3e50;
+            --text-light: #6c757d;
+            --border: #e9ecef;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--bg-light);
+        }
+
+        /* Header */
+        header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Stats Section */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+
+        /* Format Card */
+        .format-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 3rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .format-card h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .format-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .format-list li {
+            padding: 0.75rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .format-list li::before {
+            content: "✓";
+            color: var(--success);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Search and Filter */
+        .controls {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1.5rem;
+            border: 2px solid var(--border);
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Deep Dive Cards */
+        .deep-dives {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .dive-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+            border-left: 4px solid var(--border);
+        }
+
+        .dive-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .dive-card.completed {
+            border-left-color: var(--success);
+        }
+
+        .dive-card.beginner {
+            border-left-color: var(--success);
+        }
+
+        .dive-card.intermediate {
+            border-left-color: var(--warning);
+        }
+
+        .dive-card.advanced {
+            border-left-color: var(--primary);
+        }
+
+        .dive-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .dive-number {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .dive-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-complete {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-coming {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .dive-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .dive-description {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .dive-topics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .topic-tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-light);
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: var(--text-dark);
+        }
+
+        .dive-level {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .level-beginner {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .level-intermediate {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .level-advanced {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* Learning Paths */
+        .learning-paths {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 3rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .learning-paths h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .path-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .path-card {
+            padding: 1.5rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .path-card.beginner-path {
+            border-left-color: var(--success);
+        }
+
+        .path-card.intermediate-path {
+            border-left-color: var(--warning);
+        }
+
+        .path-card.advanced-path {
+            border-left-color: var(--primary);
+        }
+
+        .path-card h3 {
+            margin-bottom: 1rem;
+        }
+
+        .path-card ol {
+            margin-left: 1.5rem;
+        }
+
+        .path-card li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text-dark);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-buttons {
+                flex-direction: column;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <a href="/" class="logo">
+                <span>⚡</span>
+                <span>Fuzion Docs</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#getting-started">Getting Started</a></li>
+                <li><a href="#tutorials">Tutorials</a></li>
+                <li><a href="#deep-dives">Deep Dives</a></li>
+                <li><a href="#api">API Reference</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>📚 Fuzion Deep Dive Series</h1>
+        <p>Detailed explanations for every important concept in Fuzion. From basics to advanced topics, master the language one concept at a time.</p>
+    </section>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">40</div>
+                <div class="stat-label">Total Deep Dives</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">2</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">38</div>
+                <div class="stat-label">Coming Soon</div>
+            </div>
+        </div>
+
+        <!-- Format Card -->
+        <div class="format-card">
+            <h2>📖 What's in Each Deep Dive?</h2>
+            <ul class="format-list">
+                <li>🎯 What it is (simple definition)</li>
+                <li>📘 How it works (mechanics)</li>
+                <li>🔍 Examples (simple to complex)</li>
+                <li>❌ Common mistakes</li>
+                <li>💡 Mental models</li>
+                <li>🎓 Best practices</li>
+            </ul>
+        </div>
+
+        <!-- Learning Paths -->
+        <div class="learning-paths">
+            <h2>🎯 Recommended Learning Paths</h2>
+            <div class="path-grid">
+                <div class="path-card beginner-path">
+                    <h3>🌱 For Beginners</h3>
+                    <p>Start with the basics in order:</p>
+                    <ol>
+                        <li>Colons and Block Headers ✓</li>
+                        <li>Indentation-Based Syntax</li>
+                        <li>String Interpolation ✓</li>
+                        <li>Variables and mut Keyword</li>
+                        <li>Functions</li>
+                        <li>Control Flow (If/Else, Loops)</li>
+                    </ol>
+                </div>
+
+                <div class="path-card intermediate-path">
+                    <h3>📚 For Intermediate Users</h3>
+                    <p>Focus on advanced concepts:</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Type System (all three modes)</li>
+                        <li>Closures</li>
+                        <li>Objects and Types</li>
+                        <li>Module System</li>
+                        <li>Memory Model</li>
+                    </ul>
+                </div>
+
+                <div class="path-card advanced-path">
+                    <h3>🚀 For Advanced Users</h3>
+                    <p>Deep dives into:</p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>Performance Optimization</li>
+                        <li>Memory Model Details</li>
+                        <li>Advanced Type System Features</li>
+                        <li>Testing and Error Handling</li>
+                        <li>CLI and Tooling</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="controls">
+            <input type="text" class="search-box" id="search-box" placeholder="🔍 Search deep dives..." onkeyup="searchDives()">
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterDives('all')">All (40)</button>
+                <button class="filter-btn" onclick="filterDives('completed')">✓ Completed (2)</button>
+                <button class="filter-btn" onclick="filterDives('beginner')">🌱 Beginner (12)</button>
+                <button class="filter-btn" onclick="filterDives('intermediate')">📚 Intermediate (15)</button>
+                <button class="filter-btn" onclick="filterDives('advanced')">🚀 Advanced (13)</button>
+            </div>
+        </div>
+
+        <!-- Deep Dives List -->
+        <div class="deep-dives" id="deep-dives">
+            <!-- Completed Dives -->
+            <div class="dive-card completed beginner" data-level="beginner" data-status="completed">
+                <div class="dive-header">
+                    <span class="dive-number">#1</span>
+                    <span class="dive-status status-complete">✓ Complete</span>
+                </div>
+                <h3 class="dive-title">Colons and Block Headers</h3>
+                <p class="dive-description">Every block header ends with `:` - Universal rule for functions, loops, conditionals, and more.</p>
+                <div class="dive-topics">
+                    <span class="topic-tag">Block Syntax</span>
+                    <span class="topic-tag">Indentation</span>
+                    <span class="topic-tag">Fundamentals</span>
+                </div>
+                <span class="dive-level level-beginner">Beginner</span>
+            </div>
+
+            <div class="dive-card completed beginner" data-level="beginner" data-status="completed">
+                <div class="dive-header">
+                    <span class="dive-number">#3</span>
+                    <span class="dive-status status-complete">✓ Complete</span>
+                </div>
+                <h3 class="dive-title">String Interpolation {expression}</h3>
+                <p class="dive-description">Embed expressions in strings with `{...}` - Auto-conversion, any expression, escape with `\{`</p>
+                <div class="dive-topics">
+                    <span class="topic-tag">Strings</span>
+                    <span class="topic-tag">Expressions</span>
+                    <span class="topic-tag">Fundamentals</span>
+                </div>
+                <span class="dive-level level-beginner">Beginner</span>
+            </div>
+
+            <!-- Coming Soon Dives -->
+            <div class="dive-card beginner" data-level="beginner" data-status="coming">
+                <div class="dive-header">
+                    <span class="dive-number">#2</span>
+                    <span class="dive-status status-coming">Coming Soon</span>
+                </div>
+                <h3 class="dive-title">Indentation-Based Syntax</h3>
+                <p class="dive-description">How indentation defines scope, 4 spaces rule, nested blocks, and common errors.</p>
+                <div class="dive-topics">
+                    <span class="topic-tag">Syntax</span>
+                    <span class="topic-tag">Parser</span>
+                    <span class="topic-tag">Best Practices</span>
+                </div>
+                <span class="dive-level level-beginner">Beginner</span>
+            </div>
+
+            <div class="dive-card beginner" data-level="beginner" data-status="coming">
+                <div class="dive-header">
+                    <span class="dive-number">#4</span>
+                    <span class="dive-status status-coming">Coming Soon</span>
+                </div>
+                <h3 class="dive-title">Variables and mut Keyword</h3>
+                <p class="dive-description">Immutable by default philosophy, when to use mut, variable scope, shadowing, and lifetime.</p>
+                <div class="dive-topics">
+                    <span class="topic-tag">Variables</span>
+                    <span class="topic-tag">Mutability</span>
+                    <span class="topic-tag">Scope</span>
+                </div>
+                <span class="dive-level level-beginner">Beginner</span>
+            </div>
+
+            <div class="dive-card beginner" data-level="beginner" data-status="coming">
+                <div class="dive-header">
+                    <span class="dive-number">#5</span>
+                    <span class="dive-status status-coming">Coming Soon</span>
+                </div>
+                <h3 class="dive-title">Function Parameters</h3>
+                <p class="dive-description">Positional vs named arguments, default values, mixing styles, and API design best practices.</p>
+                <div class="dive-topics">
+                    <span class="topic-tag">Functions</span>
+                    <span class="topic-tag">Parameters</span>
+                    <span class="topic-tag">API Design</span>
+                </div>
+                <span class="dive-level level-beginner">Beginner</span>
+            </div>
+
+            <div class="dive-card intermediate" data-level="intermediate" data-status="coming">
+                <div class="dive-header">
+                    <span class="dive-number">#6</span>
+                    <span class="dive-status status-coming">Coming Soon</span>
+                </div>
+                <h3 class="dive-title">Type Annotations (Optional Typing)</h3>
+                <p class="dive-description">When to add type annotations, three typing modes, type inference rules, and performance implications.</p>
+                <div class="dive-topics">
+                    <span class="topic-tag">Types</span>
+                    <span class="topic-tag">Type System</span>
+                    <span class="topic-tag">Gradual Typing</span>
+                </div>
+                <span class="dive-level level-intermediate">Intermediate</span>
+            </div>
+
+            <div class="dive-card beginner" data-level="beginner" data-status="coming">
+                <div class="dive-header">
+                    <span class="dive-number">#7</span>
+                    <span class="dive-status status-coming">Coming Soon</span>
+                </div>
+                <h3 class="dive-title">Control Flow: If/Else</h3>
+                <p class="dive-description">If statement structure, else if chaining, inline conditionals, truthy/falsy values, logical operators.</p>
+                <div class="dive-topics">
+                    <span class="topic-tag">Control Flow</span>
+                    <span class="topic-tag">Conditionals</span>
+                    <span class="topic-tag">Logic</span>
+                </div>
+                <span class="dive-level level-beginner">Beginner</span>
+            </div>
+
+            <div class="dive-card intermediate" data-level="intermediate" data-status="coming">
+                <div class="dive-header">
+                    <span class="dive-number">#8</span>
+                    <span class="dive-status status-coming">Coming Soon</span>
+                </div>
+                <h3 class="dive-title">Match Statement (Pattern Matching)</h3>
+                <p class="dive-description">Pattern matching syntax, value/range/type matching, guard clauses, and exhaustiveness checking.</p>
+                <div class="dive-topics">
+                    <span class="topic-tag">Pattern Matching</span>
+                    <span class="topic-tag">Match</span>
+                    <span class="topic-tag">Control Flow</span>
+                </div>
+                <span class="dive-level level-intermediate">Intermediate</span>
+            </div>
+
+            <div class="dive-card beginner" data-level="beginner" data-status="coming">
+                <div class="dive-header">
+                    <span class="dive-number">#9</span>
+                    <span class="dive-status status-coming">Coming Soon</span>
+                </div>
+                <h3 class="dive-title">Loops (For, While, Loop)</h3>
+                <p class="dive-description">For loops with ranges and collections, while loops, infinite loops, break and continue.</p>
+                <div class="dive-topics">
+                    <span class="topic-tag">Loops</span>
+                    <span class="topic-tag">Iteration</span>
+                    <span class="topic-tag">Control Flow</span>
+                </div>
+                <span class="dive-level level-beginner">Beginner</span>
+            </div>
+
+            <div class="dive-card intermediate" data-level="intermediate" data-status="coming">
+                <div class="dive-header">
+                    <span class="dive-number">#10</span>
+                    <span class="dive-status status-coming">Coming Soon</span>
+                </div>
+                <h3 class="dive-title">Guard Clauses and Unless</h3>
+                <p class="dive-description">Guard statement syntax, early returns, unless (inverse if), and validation patterns.</p>
+                <div class="dive-topics">
+                    <span class="topic-tag">Guards</span>
+                    <span class="topic-tag">Defensive Programming</span>
+                    <span class="topic-tag">Error Handling</span>
+                </div>
+                <span class="dive-level level-intermediate">Intermediate</span>
+            </div>
+
+            <div class="dive-card beginner" data-level="beginner" data-status="coming">
+                <div class="dive-header">
+                    <span class="dive-number">#11</span>
+                    <span class="dive-status status-coming">Coming Soon</span>
+                </div>
+                <h3 class="dive-title">Functions (Declaration, Calls, Returns)</h3>
+                <p class="dive-description">Function definition syntax, return values, first-class functions, passing functions, recursion.</p>
+                <div class="dive-topics">
+                    <span class="topic-tag">Functions</span>
+                    <span class="topic-tag">Recursion</span>
+                    <span class="topic-tag">Higher-Order</span>
+                </div>
+                <span class="dive-level level-beginner">Beginner</span>
+            </div>
+
+            <div class="dive-card intermediate" data-level="intermediate" data-status="coming">
+                <div class="dive-header">
+                    <span class="dive-number">#12</span>
+                    <span class="dive-status status-coming">Coming Soon</span>
+                </div>
+                <h3 class="dive-title">Lambda Functions (Arrow Syntax)</h3>
+                <p class="dive-description">Lambda syntax, when to use lambdas vs regular functions, closure behavior in lambdas.</p>
+                <div class="dive-topics">
+                    <span class="topic-tag">Lambdas</span>
+                    <span class="topic-tag">Arrow Functions</span>
+                    <span class="topic-tag">Closures</span>
+                </div>
+                <span class="dive-level level-intermediate">Intermediate</span>
+            </div>
+
+            <div class="dive-card intermediate" data-level="intermediate" data-status="coming">
+                <div class="dive-header">
+                    <span class="dive-number">#13</span>
+                    <span class="dive-status status-coming">Coming Soon</span>
+                </div>
+                <h3 class="dive-title">Closures (Capturing Variables)</h3>
+                <p class="dive-description">What closures are, how variable capture works, lexical scoping, closure memory model.</p>
+                <div class="dive-topics">
+                    <span class="topic-tag">Closures</span>
+                    <span class="topic-tag">Lexical Scope</span>
+                    <span class="topic-tag">Memory</span>
+                </div>
+                <span class="dive-level level-intermediate">Intermediate</span>
+            </div>
+
+            <!-- Continue with remaining dives (14-40) following the same pattern -->
+            <div class="dive-card intermediate" data-level="intermediate" data-status="coming">
+                <div class="dive-header">
+                    <span class="dive-number">#14-40</span>
+                    <span class="dive-status status-coming">Coming Soon</span>
+                </div>
+                <h3 class="dive-title">More Topics Coming Soon...</h3>
+                <p class="dive-description">26 more deep dives covering Types, Objects, Modules, Memory, Collections, Testing, Performance, and more.</p>
+                <div class="dive-topics">
+                    <span class="topic-tag">Advanced Topics</span>
+                    <span class="topic-tag">System Design</span>
+                    <span class="topic-tag">Best Practices</span>
+                </div>
+                <span class="dive-level level-advanced">Various Levels</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Fuzion Programming Language</p>
+        <p>Want a specific deep dive? Request it in our <a href="#community" style="color: white; text-decoration: underline;">community forum</a></p>
+    </footer>
+
+    <script>
+        // Search functionality
+        function searchDives() {
+            const searchTerm = document.getElementById('search-box').value.toLowerCase();
+            const cards = document.querySelectorAll('.dive-card');
+
+            cards.forEach(card => {
+                const title = card.querySelector('.dive-title').textContent.toLowerCase();
+                const description = card.querySelector('.dive-description').textContent.toLowerCase();
+                const topics = Array.from(card.querySelectorAll('.topic-tag')).map(t => t.textContent.toLowerCase()).join(' ');
+
+                if (title.includes(searchTerm) || description.includes(searchTerm) || topics.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Filter functionality
+        function filterDives(filter) {
+            const cards = document.querySelectorAll('.dive-card');
+            const buttons = document.querySelectorAll('.filter-btn');
+
+            // Update active button
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Filter cards
+            cards.forEach(card => {
+                if (filter === 'all') {
+                    card.style.display = 'block';
+                } else if (filter === 'completed') {
+                    card.style.display = card.dataset.status === 'completed' ? 'block' : 'none';
+                } else {
+                    card.style.display = card.dataset.level === filter ? 'block' : 'none';
+                }
+            });
+        }
+
+        // Click to view (placeholder)
+        document.querySelectorAll('.dive-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const status = card.querySelector('.dive-status').textContent;
+                if (status.includes('Complete')) {
+                    alert('This deep dive is available! Navigate to the full article.');
+                } else {
+                    alert('This deep dive is coming soon. Check back later!');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
