@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuzion: Colons and Block Headers - Complete Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --error: #ef4444;
+            --bg-light: #f8f9fa;
+            --text-dark: #2c3e50;
+            --text-light: #6c757d;
+            --border: #e9ecef;
+            --shadow: rgba(0,0,0,0.1);
+            --code-bg: #2d2d2d;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--bg-light);
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--text-dark);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box strong {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .rule-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .rule-list li {
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: var(--bg-light);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .rule-list li::before {
+            content: "✓";
+            color: var(--success);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            color: #d4d4d4;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .code-header {
+            background: #252525;
+            color: #888;
+            padding: 0.5rem 1rem;
+            border-radius: 6px 6px 0 0;
+            margin: -1.5rem -1.5rem 1rem -1.5rem;
+            font-size: 0.85rem;
+        }
+
+        .keyword { color: #c586c0; }
+        .comment { color: #6a9955; }
+        .string { color: #ce9178; }
+        .function { color: #dcdcaa; }
+        .number { color: #b5cea8; }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .comparison-box {
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid;
+        }
+
+        .wrong {
+            background: #fef2f2;
+            border-color: var(--error);
+        }
+
+        .wrong h4 {
+            color: var(--error);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .correct {
+            background: #f0fdf4;
+            border-color: var(--success);
+        }
+
+        .correct h4 {
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-light);
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        tr:hover {
+            background: var(--bg-light);
+        }
+
+        .callout {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .callout-title {
+            font-weight: 600;
+            color: #f59e0b;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .key-takeaways {
+            background: linear-gradient(135deg, #10b98115 0%, #059c6915 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .key-takeaways h3 {
+            color: var(--success);
+            margin-top: 0;
+        }
+
+        .key-takeaways ul {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .key-takeaways li {
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .key-takeaways li::before {
+            content: "🎯";
+            font-size: 1.2rem;
+        }
+
+        .toc {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        .toc h3 {
+            margin-top: 0;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            padding: 0.5rem 0;
+        }
+
+        .toc a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .toc a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 1.5rem 1rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">
+                <span>⚡</span>
+                <span>Fuzion Docs</span>
+            </a>
+        </nav>
+    </header>
+
+    <div class="hero">
+        <h1>🎯 Colons and Block Headers</h1>
+        <p>Master the universal rule that makes Fuzion code clean and consistent</p>
+    </div>
+
+    <div class="container">
+        <div class="toc">
+            <h3>📑 Quick Navigation</h3>
+            <ul>
+                <li><a href="#what-is">What is a Block Header?</a></li>
+                <li><a href="#colon-rule">The Colon Rule</a></li>
+                <li><a href="#examples">Block Header Examples</a></li>
+                <li><a href="#mistakes">Common Mistakes</a></li>
+                <li><a href="#nesting">Nested Blocks</a></li>
+                <li><a href="#why">Why Colons?</a></li>
+            </ul>
+        </div>
+
+        <div class="section" id="what-is">
+            <h2>🎯 What is a "Block Header"?</h2>
+            <p>A <strong>block header</strong> is the line that introduces a new indented code block. It tells FUZION "the code below belongs to this structure."</p>
+        </div>
+
+        <div class="section" id="colon-rule">
+            <h2>📘 The Colon Rule (Universal)</h2>
+            <div class="highlight-box">
+                <strong>Every block header in FUZION ends with a colon :</strong>
+                <p>This is a <strong>universal, consistent rule</strong> with no exceptions.</p>
+            </div>
+
+            <h3>Why?</h3>
+            <ul class="rule-list">
+                <li><strong>Visual consistency</strong> - You always know when a block is starting</li>
+                <li><strong>No ambiguity</strong> - Parser knows "next line should be indented"</li>
+                <li><strong>Reads naturally</strong> - Like saying "if this condition: then do this"</li>
+                <li><strong>No confusion</strong> - Unlike Python which has exceptions, FUZION is strict</li>
+            </ul>
+        </div>
+
+        <div class="section" id="examples">
+            <h2>🔍 What Counts as a "Block Header"?</h2>
+            <p>Any line that introduces an indented block of code:</p>
+
+            <h3>1. Function Definitions</h3>
+            <div class="code-block">
+                <div class="code-header">function_example.fz</div>
+                <pre><code><span class="function">add</span> x, y:           <span class="comment"># ← Block header (ends with :)</span>
+    <span class="keyword">return</span> x + y    <span class="comment"># ← Block body (indented)</span>
+
+<span class="function">greet</span> name:         <span class="comment"># ← Header</span>
+    <span class="keyword">print</span> <span class="string">"Hello"</span>   <span class="comment"># ← Body</span>
+    <span class="keyword">print</span> name      <span class="comment"># ← Body</span></code></pre>
+            </div>
+
+            <h3>2. Conditional Statements (if/else)</h3>
+            <div class="code-block">
+                <div class="code-header">conditionals.fz</div>
+                <pre><code><span class="keyword">if</span> age >= <span class="number">18</span>:               <span class="comment"># ← Header</span>
+    <span class="keyword">print</span> <span class="string">"Adult"</span>           <span class="comment"># ← Body</span>
+
+<span class="keyword">if</span> score > <span class="number">90</span>:              <span class="comment"># ← Header</span>
+    <span class="keyword">print</span> <span class="string">"Excellent"</span>       <span class="comment"># ← Body</span>
+<span class="keyword">else</span>:                       <span class="comment"># ← Header (else also needs :)</span>
+    <span class="keyword">print</span> <span class="string">"Keep trying"</span>     <span class="comment"># ← Body</span></code></pre>
+            </div>
+
+            <h3>3. Match Statements</h3>
+            <div class="code-block">
+                <div class="code-header">match.fz</div>
+                <pre><code><span class="keyword">match</span> status:           <span class="comment"># ← Header (match keyword)</span>
+    <span class="keyword">case</span> <span class="string">"ok"</span>:          <span class="comment"># ← Header (each case)</span>
+        <span class="keyword">print</span> <span class="string">"Good"</span>    <span class="comment"># ← Body</span>
+    <span class="keyword">case</span> <span class="string">"error"</span>:       <span class="comment"># ← Header</span>
+        <span class="keyword">print</span> <span class="string">"Bad"</span>     <span class="comment"># ← Body</span>
+    <span class="keyword">else</span>:               <span class="comment"># ← Header</span>
+        <span class="keyword">print</span> <span class="string">"Unknown"</span> <span class="comment"># ← Body</span></code></pre>
+            </div>
+
+            <h3>4. Loops</h3>
+            <div class="code-block">
+                <div class="code-header">loops.fz</div>
+                <pre><code><span class="comment"># While loop</span>
+<span class="keyword">while</span> count < <span class="number">5</span>:        <span class="comment"># ← Header</span>
+    <span class="keyword">print</span> count         <span class="comment"># ← Body</span>
+    count = count + <span class="number">1</span>   <span class="comment"># ← Body</span>
+
+<span class="comment"># For loop</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1</span> <span class="keyword">to</span> <span class="number">5</span>:        <span class="comment"># ← Header</span>
+    <span class="keyword">print</span> i             <span class="comment"># ← Body</span>
+
+<span class="comment"># Infinite loop</span>
+<span class="keyword">loop</span>:                   <span class="comment"># ← Header</span>
+    get_input()         <span class="comment"># ← Body</span></code></pre>
+            </div>
+
+            <h3>5. Type Definitions</h3>
+            <div class="code-block">
+                <div class="code-header">types.fz</div>
+                <pre><code><span class="keyword">Person</span>:                 <span class="comment"># ← Header (type definition)</span>
+    name: text          <span class="comment"># ← Body (fields)</span>
+    age: number         <span class="comment"># ← Body</span>
+
+    greet:              <span class="comment"># ← Header (method definition)</span>
+        <span class="keyword">print</span> <span class="string">"Hi"</span>      <span class="comment"># ← Body</span></code></pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎨 Visual Pattern Recognition</h2>
+            <div class="highlight-box">
+                <strong>The Pattern</strong>
+                <div class="code-block" style="margin-top: 1rem;">
+                    <pre><code>KEYWORD PARAMETERS:     <span class="comment"># ← Always ends with :</span>
+    indented code       <span class="comment"># ← Block starts here</span>
+    more code           <span class="comment"># ← Still in the block</span>
+next line               <span class="comment"># ← Back to outer level (no indent)</span></code></pre>
+                </div>
+            </div>
+
+            <h3>Real Examples</h3>
+            <div class="code-block">
+                <pre><code><span class="comment"># Pattern 1: Function</span>
+<span class="function">calculate</span> x, y:         <span class="comment"># keyword=none, parameters="x, y", colon=:</span>
+    result = x + y      <span class="comment"># indented = belongs to function</span>
+    <span class="keyword">return</span> result       <span class="comment"># still indented = still in function</span>
+<span class="keyword">print</span> <span class="string">"done"</span>            <span class="comment"># not indented = outside function</span>
+
+<span class="comment"># Pattern 2: If statement</span>
+<span class="keyword">if</span> x > <span class="number">0</span>:               <span class="comment"># keyword="if", condition="x > 0", colon=:</span>
+    <span class="keyword">print</span> <span class="string">"positive"</span>    <span class="comment"># indented = belongs to if</span>
+<span class="keyword">print</span> <span class="string">"continuing"</span>      <span class="comment"># not indented = outside if</span></code></pre>
+            </div>
+        </div>
+
+        <div class="section" id="mistakes">
+            <h2>❌ Common Mistakes</h2>
+
+            <h3>Mistake 1: Forgetting the Colon</h3>
+            <div class="comparison">
+                <div class="comparison-box wrong">
+                    <h4>❌ WRONG - No colon</h4>
+                    <div class="code-block">
+                        <pre><code><span class="keyword">if</span> x > <span class="number">5</span>
+    <span class="keyword">print</span> <span class="string">"large"</span></code></pre>
+                    </div>
+                </div>
+                <div class="comparison-box correct">
+                    <h4>✅ CORRECT</h4>
+                    <div class="code-block">
+                        <pre><code><span class="keyword">if</span> x > <span class="number">5</span>:
+    <span class="keyword">print</span> <span class="string">"large"</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="callout">
+                <div class="callout-title">💡 Error Message</div>
+                <div class="code-block">
+                    <pre><code>Error: Expected ':' after condition
+Line 1: if x > 5
+                ^
+Help: Block headers in FUZION always end with ':'
+Try: if x > 5:</code></pre>
+                </div>
+            </div>
+
+            <h3>Mistake 2: Missing Colon on Else</h3>
+            <div class="comparison">
+                <div class="comparison-box wrong">
+                    <h4>❌ WRONG - Forgot colon after else</h4>
+                    <div class="code-block">
+                        <pre><code><span class="keyword">if</span> x > <span class="number">5</span>:
+    <span class="keyword">print</span> <span class="string">"large"</span>
+<span class="keyword">else</span>
+    <span class="keyword">print</span> <span class="string">"small"</span></code></pre>
+                    </div>
+                </div>
+                <div class="comparison-box correct">
+                    <h4>✅ CORRECT</h4>
+                    <div class="code-block">
+                        <pre><code><span class="keyword">if</span> x > <span class="number">5</span>:
+    <span class="keyword">print</span> <span class="string">"large"</span>
+<span class="keyword">else</span>:
+    <span class="keyword">print</span> <span class="string">"small"</span></code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="nesting">
+            <h2>🔄 Nested Blocks (Colons Stack)</h2>
+            <p>Each level of nesting needs its own colon:</p>
+            <div class="code-block">
+                <pre><code><span class="comment"># Function header: colon</span>
+<span class="function">calculate</span> x, y:
+    <span class="comment"># If header: colon</span>
+    <span class="keyword">if</span> x > <span class="number">0</span>:
+        <span class="comment"># Another if header: colon</span>
+        <span class="keyword">if</span> y > <span class="number">0</span>:
+            <span class="keyword">return</span> x + y
+        <span class="comment"># Else header: colon</span>
+        <span class="keyword">else</span>:
+            <span class="keyword">return</span> x - y
+    <span class="comment"># Else header: colon</span>
+    <span class="keyword">else</span>:
+        <span class="keyword">return</span> <span class="number">0</span></code></pre>
+            </div>
+        </div>
+
+        <div class="section" id="why">
+            <h2>🎯 Why Not Use Braces {}?</h2>
+            <p>Many languages use braces to define blocks. <strong>FUZION chose colons + indentation because:</strong></p>
+            <ul class="rule-list">
+                <li><strong>Less visual noise</strong> - No closing braces</li>
+                <li><strong>Forced readability</strong> - Indentation must be correct</li>
+                <li><strong>Faster to type</strong> - One character vs two</li>
+                <li><strong>Cleaner look</strong> - More like natural writing</li>
+            </ul>
+
+            <div class="comparison">
+                <div class="comparison-box">
+                    <h4>JavaScript (braces)</h4>
+                    <div class="code-block">
+                        <pre><code>function add(x, y) {
+    if (x > 0) {
+        return x + y;
+    } else {
+        return 0;
+    }
+}</code></pre>
+                    </div>
+                </div>
+                <div class="comparison-box">
+                    <h4>FUZION (colons + indent)</h4>
+                    <div class="code-block">
+                        <pre><code><span class="function">add</span> x, y:
+    <span class="keyword">if</span> x > <span class="number">0</span>:
+        <span class="keyword">return</span> x + y
+    <span class="keyword">else</span>:
+        <span class="keyword">return</span> <span class="number">0</span></code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📚 Complete List of Block Headers</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Construct</th>
+                            <th>Syntax</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Function</td><td><code>name params:</code></td><td><code>add x, y:</code></td></tr>
+                        <tr><td>If</td><td><code>if condition:</code></td><td><code>if x > 5:</code></td></tr>
+                        <tr><td>Else If</td><td><code>else if condition:</code></td><td><code>else if x < 0:</code></td></tr>
+                        <tr><td>Else</td><td><code>else:</code></td><td><code>else:</code></td></tr>
+                        <tr><td>Unless</td><td><code>unless condition:</code></td><td><code>unless verified:</code></td></tr>
+                        <tr><td>Match</td><td><code>match expr:</code></td><td><code>match status:</code></td></tr>
+                        <tr><td>Case</td><td><code>case pattern:</code></td><td><code>case "ok":</code></td></tr>
+                        <tr><td>While</td><td><code>while condition:</code></td><td><code>while count < 10:</code></td></tr>
+                        <tr><td>For</td><td><code>for var in iter:</code></td><td><code>for i in 1 to 5:</code></td></tr>
+                        <tr><td>Loop</td><td><code>loop:</code></td><td><code>loop:</code></td></tr>
+                        <tr><td>Type</td><td><code>TypeName:</code></td><td><code>Person:</code></td></tr>
+                        <tr><td>Trait</td><td><code>trait Name:</code></td><td><code>trait Drawable:</code></td></tr>
+                        <tr><td>Guard</td><td><code>guard condition:</code></td><td><code>guard valid:</code></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="text-align: center; margin-top: 1rem; font-weight: 600; color: var(--primary);">
+                <strong>Every single one</strong> ends with a colon. No exceptions.
+            </p>
+        </div>
+
+        <div class="key-takeaways">
+            <h3>🎯 Key Takeaways</h3>
+            <ul>
+                <li><strong>Colon = Block Incoming</strong> - Always signals indented code follows</li>
+                <li><strong>Universal Rule</strong> - No exceptions, every block header has one</li>
+                <li><strong>One Per Level</strong> - Each nesting level gets its own colon</li>
+                <li><strong>Visual Consistency</strong> - Makes code predictable and scannable</li>
+                <li><strong>Parser Signal</strong> - Tells FUZION "expect indent on next line"</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>💡 Quick Mental Check</h2>
+            <div class="highlight-box">
+                <p style="font-size: 1.1rem; margin-bottom: 1rem;"><strong>When writing FUZION, ask yourself:</strong></p>
+                <p style="font-size: 1.2rem; text-align: center; font-style: italic;">
+                    "Am I about to write indented code under this line?"
+                </p>
+                <div style="text-align: center; margin-top: 1.5rem; font-size: 1.1rem;">
+                    <div style="margin: 0.5rem 0;"><strong>If YES</strong> → Put a colon at the end</div>
+                    <div style="margin: 0.5rem 0;"><strong>If NO</strong> → No colon needed</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎓 Summary</h2>
+            <div class="highlight-box">
+                <h4>The Colon Rule:</h4>
+                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                    <li>Every block header ends with <code>:</code></li>
+                    <li>Block headers introduce indented code</li>
+                    <li>This includes: functions, if/else, loops, types, match cases, etc.</li>
+                    <li>No exceptions</li>
+                    <li>Enforced by parser</li>
+                    <li>Visual signal for human readers</li>
+                </ul>
+            </div>
+
+            <div class="callout">
+                <div class="callout-title">💡 Remember</div>
+                <div class="code-block">
+                    <pre><code>keyword_or_name parameters:
+    indented_block_body</code></pre>
+                </div>
+                <p style="margin-top: 1rem; margin-bottom: 0; text-align: center; font-weight: 600;">
+                    That's it! Simple, consistent, predictable.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

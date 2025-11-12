@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuzion: String Interpolation - Complete Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --bg-light: #f8f9fa;
+            --text-dark: #2c3e50;
+            --text-light: #6c757d;
+            --border: #e9ecef;
+            --shadow: rgba(0,0,0,0.1);
+            --code-bg: #2d2d2d;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--bg-light);
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--text-dark);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box strong {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .syntax-box {
+            background: #f0f9ff;
+            border-left: 4px solid var(--info);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            color: #d4d4d4;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .code-header {
+            background: #252525;
+            color: #888;
+            padding: 0.5rem 1rem;
+            border-radius: 6px 6px 0 0;
+            margin: -1.5rem -1.5rem 1rem -1.5rem;
+            font-size: 0.85rem;
+        }
+
+        .output-block {
+            background: #1e293b;
+            color: #10b981;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid var(--success);
+        }
+
+        .output-label {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .keyword { color: #c586c0; }
+        .comment { color: #6a9955; }
+        .string { color: #ce9178; }
+        .function { color: #dcdcaa; }
+        .number { color: #b5cea8; }
+        .interpolation { color: #4ec9b0; background: rgba(78, 201, 176, 0.1); padding: 0 4px; border-radius: 3px; }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .comparison-box {
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid;
+        }
+
+        .wrong {
+            background: #fef2f2;
+            border-color: var(--error);
+        }
+
+        .wrong h4 {
+            color: var(--error);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .correct {
+            background: #f0fdf4;
+            border-color: var(--success);
+        }
+
+        .correct h4 {
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .example-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .example-card {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .example-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-light);
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        tr:hover {
+            background: var(--bg-light);
+        }
+
+        .callout {
+            background: #fffbeb;
+            border-left: 4px solid var(--warning);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .callout-title {
+            font-weight: 600;
+            color: var(--warning);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .key-takeaways {
+            background: linear-gradient(135deg, #10b98115 0%, #059c6915 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .key-takeaways h3 {
+            color: var(--success);
+            margin-top: 0;
+        }
+
+        .key-takeaways ul {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .key-takeaways li {
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .key-takeaways li::before {
+            content: "✨";
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .best-practices {
+            background: #f0f9ff;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .best-practices h3 {
+            color: var(--info);
+            margin-top: 0;
+        }
+
+        .quiz-box {
+            background: linear-gradient(135deg, #f59e0b15 0%, #d9770615 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .quiz-title {
+            font-size: 1.5rem;
+            color: var(--warning);
+            margin-bottom: 1rem;
+        }
+
+        details {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        summary {
+            font-weight: 600;
+            color: var(--primary);
+            padding: 0.5rem;
+            cursor: pointer;
+        }
+
+        summary:hover {
+            color: var(--primary-dark);
+        }
+
+        .toc {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        .toc h3 {
+            margin-top: 0;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            padding: 0.5rem 0;
+        }
+
+        .toc a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .toc a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .language-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .lang-card {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-top: 4px solid var(--primary);
+        }
+
+        .lang-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .comparison,
+            .language-comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 1.5rem 1rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">
+                <span>⚡</span>
+                <span>Fuzion Docs</span>
+            </a>
+        </nav>
+    </header>
+
+    <div class="hero">
+        <h1>🎯 String Interpolation</h1>
+        <p>Embed expressions directly inside strings for clean, readable code</p>
+    </div>
+
+    <div class="container">
+        <div class="toc">
+            <h3>📑 Quick Navigation</h3>
+            <ul>
+                <li><a href="#what-is">What is String Interpolation?</a></li>
+                <li><a href="#basic">Basic Concept</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#examples">Examples: Simple to Complex</a></li>
+                <li><a href="#advanced">Advanced Features</a></li>
+                <li><a href="#type-conversion">Type Conversion Rules</a></li>
+                <li><a href="#mistakes">Common Mistakes</a></li>
+                <li><a href="#comparison">Language Comparison</a></li>
+                <li><a href="#best-practices">Best Practices</a></li>
+            </ul>
+        </div>
+
+        <div class="section" id="what-is">
+            <h2>🎯 What is String Interpolation?</h2>
+            <div class="highlight-box">
+                <p><strong>String interpolation</strong> lets you embed expressions directly inside strings instead of concatenating them manually.</p>
+            </div>
+        </div>
+
+        <div class="section" id="basic">
+            <h2>📚 Basic Concept</h2>
+
+            <h3>❌ Without Interpolation (Old Way)</h3>
+            <div class="code-block">
+                <pre><code>name = <span class="string">"Alex"</span>
+age = <span class="number">25</span>
+
+<span class="comment"># Ugly concatenation</span>
+message = <span class="string">"Hello, "</span> + name + <span class="string">"! You are "</span> + to_text(age) + <span class="string">" years old."</span>
+<span class="keyword">print</span> message</code></pre>
+            </div>
+
+            <h3>✅ With Interpolation (Clean Way)</h3>
+            <div class="code-block">
+                <pre><code>name = <span class="string">"Alex"</span>
+age = <span class="number">25</span>
+
+<span class="comment"># Clean and readable</span>
+message = <span class="string">"Hello, <span class="interpolation">{name}</span>! You are <span class="interpolation">{age}</span> years old."</span>
+<span class="keyword">print</span> message</code></pre>
+            </div>
+
+            <div class="output-block">
+                <div class="output-label">Output:</div>
+                Hello, Alex! You are 25 years old.
+            </div>
+        </div>
+
+        <div class="section" id="how-it-works">
+            <h2>🔧 How It Works</h2>
+
+            <div class="syntax-box">
+                "{expression}"
+            </div>
+
+            <p>Anything inside <code>{...}</code> is:</p>
+            <div class="example-grid">
+                <div class="example-card">
+                    <div class="example-title">1. Evaluated</div>
+                    <p>Treated as a Fuzion expression and executed</p>
+                </div>
+                <div class="example-card">
+                    <div class="example-title">2. Converted</div>
+                    <p>Automatically converted to text</p>
+                </div>
+                <div class="example-card">
+                    <div class="example-title">3. Inserted</div>
+                    <p>Placed into the string at that position</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="examples">
+            <h2>📖 Examples from Simple to Complex</h2>
+
+            <div class="example-card">
+                <div class="example-title">1. Simple Variables</div>
+                <div class="code-block">
+                    <pre><code>name = <span class="string">"Rachamv"</span>
+<span class="keyword">print</span> <span class="string">"Welcome, <span class="interpolation">{name}</span>!"</span></code></pre>
+                </div>
+                <div class="output-block">
+                    <div class="output-label">Output:</div>
+                    Welcome, Rachamv!
+                </div>
+            </div>
+
+            <div class="example-card">
+                <div class="example-title">2. Numbers (Auto-converted)</div>
+                <div class="code-block">
+                    <pre><code>count = <span class="number">42</span>
+<span class="keyword">print</span> <span class="string">"You have <span class="interpolation">{count}</span> messages"</span></code></pre>
+                </div>
+                <div class="output-block">
+                    <div class="output-label">Output:</div>
+                    You have 42 messages
+                </div>
+            </div>
+
+            <div class="example-card">
+                <div class="example-title">3. Arithmetic Expressions</div>
+                <div class="code-block">
+                    <pre><code>x = <span class="number">10</span>
+y = <span class="number">5</span>
+<span class="keyword">print</span> <span class="string">"The sum of <span class="interpolation">{x}</span> and <span class="interpolation">{y}</span> is <span class="interpolation">{x + y}</span>"</span></code></pre>
+                </div>
+                <div class="output-block">
+                    <div class="output-label">Output:</div>
+                    The sum of 10 and 5 is 15
+                </div>
+            </div>
+
+            <div class="example-card">
+                <div class="example-title">4. Function Calls</div>
+                <div class="code-block">
+                    <pre><code><span class="function">square</span> x:
+    <span class="keyword">return</span> x * x
+
+num = <span class="number">7</span>
+<span class="keyword">print</span> <span class="string">"The square of <span class="interpolation">{num}</span> is <span class="interpolation">{square(num)}</span>"</span></code></pre>
+                </div>
+                <div class="output-block">
+                    <div class="output-label">Output:</div>
+                    The square of 7 is 49
+                </div>
+            </div>
+
+            <div class="example-card">
+                <div class="example-title">5. Object Properties</div>
+                <div class="code-block">
+                    <pre><code><span class="keyword">Person</span>:
+    name: text
+    age: number
+
+user = Person(name: <span class="string">"Ada"</span>, age: <span class="number">30</span>)
+<span class="keyword">print</span> <span class="string">"User: <span class="interpolation">{user.name}</span>, Age: <span class="interpolation">{user.age}</span>"</span></code></pre>
+                </div>
+                <div class="output-block">
+                    <div class="output-label">Output:</div>
+                    User: Ada, Age: 30
+                </div>
+            </div>
+
+            <div class="example-card">
+                <div class="example-title">6. Method Calls</div>
+                <div class="code-block">
+                    <pre><code><span class="keyword">Person</span>:
+    first_name: text
+    last_name: text
+
+    <span class="function">full_name</span> -> text:
+        <span class="keyword">return</span> <span class="string">"<span class="interpolation">{this.first_name}</span> <span class="interpolation">{this.last_name}</span>"</span>
+
+person = Person(first_name: <span class="string">"Ada"</span>, last_name: <span class="string">"Lovelace"</span>)
+<span class="keyword">print</span> <span class="string">"Hello, <span class="interpolation">{person.full_name()}</span>!"</span></code></pre>
+                </div>
+                <div class="output-block">
+                    <div class="output-label">Output:</div>
+                    Hello, Ada Lovelace!
+                </div>
+            </div>
+
+            <div class="example-card">
+                <div class="example-title">7. Conditionals (Ternary)</div>
+                <div class="code-block">
+                    <pre><code>age = <span class="number">20</span>
+status = <span class="string">"adult"</span> <span class="keyword">if</span> age >= <span class="number">18</span> <span class="keyword">else</span> <span class="string">"minor"</span>
+<span class="keyword">print</span> <span class="string">"Status: <span class="interpolation">{status}</span>"</span>
+
+<span class="comment"># Or inline:</span>
+<span class="keyword">print</span> <span class="string">"You are <span class="interpolation">{if age >= 18: "an adult" else: "a minor"}</span>"</span></code></pre>
+                </div>
+                <div class="output-block">
+                    <div class="output-label">Output:</div>
+                    Status: adult<br>
+                    You are an adult
+                </div>
+            </div>
+
+            <div class="example-card">
+                <div class="example-title">8. List Operations</div>
+                <div class="code-block">
+                    <pre><code>numbers = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]
+<span class="keyword">print</span> <span class="string">"First: <span class="interpolation">{numbers[0]}</span>, Last: <span class="interpolation">{numbers[numbers.length - 1]}</span>"</span>
+
+<span class="keyword">print</span> <span class="string">"Count: <span class="interpolation">{numbers.length}</span>"</span></code></pre>
+                </div>
+                <div class="output-block">
+                    <div class="output-label">Output:</div>
+                    First: 1, Last: 5<br>
+                    Count: 5
+                </div>
+            </div>
+
+            <div class="example-card">
+                <div class="example-title">9. Map Access</div>
+                <div class="code-block">
+                    <pre><code>config = {
+    host: <span class="string">"localhost"</span>,
+    port: <span class="number">8080</span>
+}
+
+<span class="keyword">print</span> <span class="string">"Server: <span class="interpolation">{config["host"]}</span>:<span class="interpolation">{config["port"]}</span>"</span></code></pre>
+                </div>
+                <div class="output-block">
+                    <div class="output-label">Output:</div>
+                    Server: localhost:8080
+                </div>
+            </div>
+
+            <div class="example-card">
+                <div class="example-title">10. Complex Expressions</div>
+                <div class="code-block">
+                    <pre><code>prices = [<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>]
+tax_rate = <span class="number">0.1</span>
+
+total = sum(prices)
+total_with_tax = total * (<span class="number">1</span> + tax_rate)
+
+<span class="keyword">print</span> <span class="string">"Subtotal: $<span class="interpolation">{total}</span>, With tax: $<span class="interpolation">{total_with_tax}</span>"</span></code></pre>
+                </div>
+                <div class="output-block">
+                    <div class="output-label">Output:</div>
+                    Subtotal: $100, With tax: $110
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="advanced">
+            <h2>🎨 Advanced Features</h2>
+
+            <h3>Nested Interpolation</h3>
+            <div class="code-block">
+                <pre><code>first = <span class="string">"John"</span>
+last = <span class="string">"Doe"</span>
+full = <span class="string">"<span class="interpolation">{first}</span> <span class="interpolation">{last}</span>"</span>
+
+<span class="keyword">print</span> <span class="string">"Name: <span class="interpolation">{full}</span>"</span></code></pre>
+            </div>
+            <div class="output-block">
+                <div class="output-label">Output:</div>
+                Name: John Doe
+            </div>
+
+            <h3>Multi-line Strings with Interpolation</h3>
+            <div class="code-block">
+                <pre><code>name = <span class="string">"Alice"</span>
+age = <span class="number">28</span>
+role = <span class="string">"Engineer"</span>
+
+profile = <span class="string">"""
+Name: <span class="interpolation">{name}</span>
+Age: <span class="interpolation">{age}</span>
+Role: <span class="interpolation">{role}</span>
+Status: Active
+"""</span>
+
+<span class="keyword">print</span> profile</code></pre>
+            </div>
+            <div class="output-block">
+                <div class="output-label">Output:</div>
+Name: Alice<br>
+Age: 28<br>
+Role: Engineer<br>
+Status: Active
+            </div>
+
+            <h3>Escaping Braces</h3>
+            <div class="code-block">
+                <pre><code><span class="comment"># If you need literal braces, escape them</span>
+<span class="keyword">print</span> <span class="string">"Use \{braces\} for interpolation"</span>
+
+<span class="comment"># Or use double braces (alternative)</span>
+<span class="keyword">print</span> <span class="string">"Use {{braces}} for interpolation"</span></code></pre>
+            </div>
+            <div class="output-block">
+                <div class="output-label">Output:</div>
+                Use {braces} for interpolation<br>
+                Use {braces} for interpolation
+            </div>
+        </div>
+
+        <div class="section" id="type-conversion">
+            <h2>🔄 Type Conversion Rules</h2>
+
+            <h3>Automatic Conversions</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Conversion</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>number</code></td>
+                            <td>Direct string</td>
+                            <td><code>{42}</code> → <code>"42"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>text</code></td>
+                            <td>As-is</td>
+                            <td><code>{"hi"}</code> → <code>"hi"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>bool</code></td>
+                            <td>"true" or "false"</td>
+                            <td><code>{true}</code> → <code>"true"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>none</code></td>
+                            <td>"none"</td>
+                            <td><code>{none}</code> → <code>"none"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>list</code></td>
+                            <td>JSON-like</td>
+                            <td><code>{[1,2]}</code> → <code>"[1, 2]"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>map</code></td>
+                            <td>JSON-like</td>
+                            <td><code>{{a:1}}</code> → <code>"{a: 1}"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>object</code></td>
+                            <td>Calls <code>to_text()</code> if defined</td>
+                            <td>Custom</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Custom String Representation</h3>
+            <div class="code-block">
+                <pre><code><span class="keyword">Person</span>:
+    name: text
+    age: number
+
+    <span class="function">to_text</span> -> text:
+        <span class="keyword">return</span> <span class="string">"<span class="interpolation">{this.name}</span> (<span class="interpolation">{this.age}</span>)"</span>
+
+p = Person(name: <span class="string">"Bob"</span>, age: <span class="number">35</span>)
+<span class="keyword">print</span> <span class="string">"Person: <span class="interpolation">{p}</span>"</span></code></pre>
+            </div>
+            <div class="output-block">
+                <div class="output-label">Output:</div>
+                Person: Bob (35)
+            </div>
+        </div>
+
+        <div class="section" id="mistakes">
+            <h2>🚨 Common Mistakes</h2>
+
+            <h3>Mistake 1: Forgetting Braces</h3>
+            <div class="comparison">
+                <div class="comparison-box wrong">
+                    <h4>❌ WRONG - No braces</h4>
+                    <div class="code-block">
+                        <pre><code>name = <span class="string">"Alice"</span>
+<span class="keyword">print</span> <span class="string">"Hello, name!"</span>  <span class="comment"># Prints literal "name"</span></code></pre>
+                    </div>
+                </div>
+                <div class="comparison-box correct">
+                    <h4>✅ CORRECT</h4>
+                    <div class="code-block">
+                        <pre><code>name = <span class="string">"Alice"</span>
+<span class="keyword">print</span> <span class="string">"Hello, <span class="interpolation">{name}</span>!"</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Mistake 2: Nested Quotes</h3>
+            <div class="comparison">
+                <div class="comparison-box wrong">
+                    <h4>❌ WRONG - Confusing quotes</h4>
+                    <div class="code-block">
+                        <pre><code><span class="keyword">print</span> <span class="string">"She said "<span class="interpolation">{hello}</span>""</span>  <span class="comment"># Syntax error</span></code></pre>
+                    </div>
+                </div>
+                <div class="comparison-box correct">
+                    <h4>✅ CORRECT - Use different quote styles</h4>
+                    <div class="code-block">
+                        <pre><code><span class="keyword">print</span> <span class="string">"She said '<span class="interpolation">{hello}</span>'"</span>
+<span class="keyword">print</span> <span class="string">'She said "<span class="interpolation">{hello}</span>"'</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Mistake 3: Complex Logic</h3>
+            <div class="comparison">
+                <div class="comparison-box wrong">
+                    <h4>❌ WRONG - Too complex for interpolation</h4>
+                    <div class="code-block">
+                        <pre><code><span class="keyword">print</span> <span class="string">"Result: <span class="interpolation">{
+    if x > 0:
+        "positive"
+    else:
+        "negative"
+}</span>"</span></code></pre>
+                    </div>
+                </div>
+                <div class="comparison-box correct">
+                    <h4>✅ CORRECT - Extract to variable</h4>
+                    <div class="code-block">
+                        <pre><code>result = <span class="string">"positive"</span> <span class="keyword">if</span> x > <span class="number">0</span> <span class="keyword">else</span> <span class="string">"negative"</span>
+<span class="keyword">print</span> <span class="string">"Result: <span class="interpolation">{result}</span>"</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Mistake 4: Side Effects</h3>
+            <div class="callout">
+                <div class="callout-title">⚠️ Warning: Side Effects in Interpolation</div>
+                <div class="code-block">
+                    <pre><code><span class="keyword">mut</span> count = <span class="number">0</span>
+
+<span class="function">increment</span>:
+    count = count + <span class="number">1</span>
+    <span class="keyword">return</span> count
+
+<span class="comment"># ⚠️ Careful: this calls increment()</span>
+<span class="keyword">print</span> <span class="string">"Count: <span class="interpolation">{increment()}</span>"</span>  <span class="comment"># Modifies count!</span>
+
+<span class="comment"># Better: be explicit</span>
+new_count = increment()
+<span class="keyword">print</span> <span class="string">"Count: <span class="interpolation">{new_count}</span>"</span></code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="comparison">
+            <h2>📋 Comparison with Other Languages</h2>
+
+            <div class="language-comparison">
+                <div class="lang-card">
+                    <div class="lang-name">Python (f-strings)</div>
+                    <div class="code-block">
+                        <pre><code>name = <span class="string">"Alice"</span>
+age = <span class="number">25</span>
+print(f<span class="string">"Hello, <span class="interpolation">{name}</span>! You are <span class="interpolation">{age}</span> years old."</span>)</code></pre>
+                    </div>
+                </div>
+
+                <div class="lang-card">
+                    <div class="lang-name">JavaScript (template literals)</div>
+                    <div class="code-block">
+                        <pre><code><span class="keyword">const</span> name = <span class="string">"Alice"</span>;
+<span class="keyword">const</span> age = <span class="number">25</span>;
+console.log(`Hello, <span class="interpolation">${name}</span>! You are <span class="interpolation">${age}</span> years old.`);</code></pre>
+                    </div>
+                </div>
+
+                <div class="lang-card">
+                    <div class="lang-name">FUZION</div>
+                    <div class="code-block">
+                        <pre><code>name = <span class="string">"Alice"</span>
+age = <span class="number">25</span>
+<span class="keyword">print</span> <span class="string">"Hello, <span class="interpolation">{name}</span>! You are <span class="interpolation">{age}</span> years old."</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <strong>Key Difference:</strong> Fuzion doesn't need special prefix (like <code>f</code> or backticks) - all strings support interpolation by default!
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⚡ Performance Notes</h2>
+
+            <h3>Compile-Time Optimization</h3>
+            <div class="code-block">
+                <pre><code><span class="comment"># Static strings are optimized at compile-time</span>
+<span class="keyword">print</span> <span class="string">"Hello, World!"</span>  <span class="comment"># No interpolation overhead</span>
+
+<span class="comment"># Dynamic interpolation happens at runtime</span>
+name = input(<span class="string">"Your name: "</span>)
+<span class="keyword">print</span> <span class="string">"Hello, <span class="interpolation">{name}</span>!"</span>  <span class="comment"># Runtime evaluation</span></code></pre>
+            </div>
+
+            <h3>Efficiency Tips</h3>
+            <div class="comparison">
+                <div class="comparison-box correct">
+                    <h4>✅ Efficient (single interpolation)</h4>
+                    <div class="code-block">
+                        <pre><code><span class="keyword">print</span> <span class="string">"Result: <span class="interpolation">{expensive_calculation()}</span>"</span></code></pre>
+                    </div>
+                </div>
+                <div class="comparison-box wrong">
+                    <h4>❌ Less efficient (multiple calls)</h4>
+                    <div class="code-block">
+                        <pre><code>result = expensive_calculation()
+<span class="keyword">print</span> <span class="string">"Result: "</span> + to_text(result)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="best-practices" id="best-practices">
+            <h3>🎯 Best Practices</h3>
+
+            <h4>1. Keep Expressions Simple</h4>
+            <div class="comparison">
+                <div class="comparison-box correct">
+                    <h4>✅ Good - Clear and simple</h4>
+                    <div class="code-block">
+                        <pre><code>total = calculate_total(items)
+<span class="keyword">print</span> <span class="string">"Total: $<span class="interpolation">{total}</span>"</span></code></pre>
+                    </div>
+                </div>
+                <div class="comparison-box wrong">
+                    <h4>❌ Avoid - Too complex</h4>
+                    <div class="code-block">
+                        <pre><code><span class="keyword">print</span> <span class="string">"Total: $<span class="interpolation">{calculate_total(filter(items, is_valid))}</span>"</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h4>2. Use for Readability</h4>
+            <div class="comparison">
+                <div class="comparison-box correct">
+                    <h4>✅ Clear intent</h4>
+                    <div class="code-block">
+                        <pre><code><span class="keyword">print</span> <span class="string">"Processing <span class="interpolation">{current}</span> of <span class="interpolation">{total}</span> items (<span class="interpolation">{percent}</span>%)"</span></code></pre>
+                    </div>
+                </div>
+                <div class="comparison-box wrong">
+                    <h4>❌ Hard to read</h4>
+                    <div class="code-block">
+                        <pre><code><span class="keyword">print</span> <span class="string">"Processing "</span> + to_text(current) + <span class="string">" of "</span> + to_text(total) + <span class="string">" items ("</span> + to_text(percent) + <span class="string">"%)"</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h4>3. Consistent Formatting</h4>
+            <div class="code-block">
+                <pre><code><span class="comment"># Choose a style and stick to it</span>
+<span class="keyword">print</span> <span class="string">"Name: <span class="interpolation">{user.name}</span>, Age: <span class="interpolation">{user.age}</span>"</span>  <span class="comment"># spaces after colons</span>
+<span class="keyword">print</span> <span class="string">"Name:<span class="interpolation">{user.name}</span>, Age:<span class="interpolation">{user.age}</span>"</span>     <span class="comment"># no spaces</span></code></pre>
+            </div>
+
+            <h4>4. Avoid Deep Nesting</h4>
+            <div class="comparison">
+                <div class="comparison-box wrong">
+                    <h4>❌ Hard to read</h4>
+                    <div class="code-block">
+                        <pre><code><span class="keyword">print</span> <span class="string">"User: <span class="interpolation">{users[get_id(current_user())].name}</span>"</span></code></pre>
+                    </div>
+                </div>
+                <div class="comparison-box correct">
+                    <h4>✅ Better - Break it down</h4>
+                    <div class="code-block">
+                        <pre><code>user_id = get_id(current_user())
+user = users[user_id]
+<span class="keyword">print</span> <span class="string">"User: <span class="interpolation">{user.name}</span>"</span></code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔬 Implementation Details</h2>
+            <p style="color: var(--text-light); font-style: italic;">For language designers and curious developers</p>
+
+            <h3>Parser Behavior</h3>
+            <div class="example-grid">
+                <div class="example-card">
+                    <div class="example-title">Step 1: String Mode</div>
+                    <p>When lexer encounters <code>"</code> or <code>'</code>, enters string mode</p>
+                </div>
+                <div class="example-card">
+                    <div class="example-title">Step 2: Expression Mode</div>
+                    <p>Inside string, <code>{</code> triggers expression mode</p>
+                </div>
+                <div class="example-card">
+                    <div class="example-title">Step 3: Parse Expression</div>
+                    <p>Expression parsed until matching <code>}</code></p>
+                </div>
+                <div class="example-card">
+                    <div class="example-title">Step 4: Build AST</div>
+                    <p>Expression AST inserted as interpolation node</p>
+                </div>
+                <div class="example-card">
+                    <div class="example-title">Step 5: Runtime</div>
+                    <p>At runtime, expression evaluated and converted to text</p>
+                </div>
+            </div>
+
+            <h3>AST Representation</h3>
+            <div class="code-block">
+                <div class="code-header">Example AST</div>
+                <pre><code><span class="comment"># Source: "Hello, {name}!"</span>
+<span class="comment"># AST:</span>
+StringNode(
+    parts: [
+        LiteralPart(<span class="string">"Hello, "</span>),
+        InterpolationPart(VariableNode(<span class="string">"name"</span>)),
+        LiteralPart(<span class="string">"!"</span>)
+    ]
+)</code></pre>
+            </div>
+
+            <h3>Runtime Evaluation</h3>
+            <div class="code-block">
+                <div class="code-header">Pseudo-implementation</div>
+                <pre><code><span class="function">evaluate_string</span> parts:
+    result = <span class="string">""</span>
+    <span class="keyword">for</span> part <span class="keyword">in</span> parts:
+        <span class="keyword">match</span> part:
+            <span class="keyword">case</span> LiteralPart(text):
+                result = result + text
+            <span class="keyword">case</span> InterpolationPart(expr):
+                value = evaluate(expr)
+                result = result + to_text(value)
+    <span class="keyword">return</span> result</code></pre>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h3>✅ Summary</h3>
+            <p><strong>String interpolation in FUZION:</strong></p>
+            <ul>
+                <li><strong>Syntax:</strong> <code>{expression}</code> inside any string</li>
+                <li><strong>Auto-converts</strong> all types to text</li>
+                <li><strong>Evaluates</strong> full Fuzion expressions</li>
+                <li><strong>Clean</strong> and readable code</li>
+                <li><strong>Efficient</strong> - optimized by compiler where possible</li>
+            </ul>
+
+            <div class="highlight-box" style="margin-top: 1.5rem;">
+                <strong>Remember:</strong>
+                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                    <li>Use <code>{...}</code> for dynamic values</li>
+                    <li>Keep expressions simple</li>
+                    <li>Escape with <code>\{</code> or <code>{{</code> for literal braces</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="quiz-box">
+            <div class="quiz-title">🤔 Quiz Yourself!</div>
+            <p><strong>What does this print?</strong></p>
+            <div class="code-block">
+                <pre><code>x = <span class="number">10</span>
+y = <span class="number">20</span>
+<span class="keyword">print</span> <span class="string">"x=<span class="interpolation">{x}</span>, y=<span class="interpolation">{y}</span>, sum=<span class="interpolation">{x+y}</span>, product=<span class="interpolation">{x*y}</span>"</span></code></pre>
+            </div>
+
+            <details>
+                <summary>View Answer</summary>
+                <div class="output-block" style="margin-top: 1rem;">
+                    <div class="output-label">Output:</div>
+                    x=10, y=20, sum=30, product=200
+                </div>
+                <p style="margin-top: 1rem;"><strong>Explanation:</strong> Each <code>{expression}</code> is evaluated and inserted into the string!</p>
+            </details>
+        </div>
+
+        <div class="section">
+            <h2>🚀 Next Steps</h2>
+            <p>Now that you understand string interpolation, you might want to learn about:</p>
+            <div class="example-grid">
+                <div class="example-card">
+                    <div class="example-title">📝 Multi-line Strings</div>
+                    <p>Learn about triple-quoted strings and raw strings</p>
+                </div>
+                <div class="example-card">
+                    <div class="example-title">🔧 String Methods</div>
+                    <p>Explore string manipulation and operations</p>
+                </div>
+                <div class="example-card">
+                    <div class="example-title">🎯 Regular Expressions</div>
+                    <p>Pattern matching and text processing in FUZION</p>
+                </div>
+                <div class="example-card">
+                    <div class="example-title">📊 Format Specifiers</div>
+                    <p>Advanced formatting like padding and precision</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="highlight-box" style="text-align: center; margin-top: 2rem;">
+            <p style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0;">
+                String interpolation makes your code cleaner, more readable, and more maintainable! 🎉
+            </p>
+        </div>
+    </div>
+</body>
+</html>
