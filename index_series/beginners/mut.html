@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuzion: Variables and the mut Keyword - Deep Dive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --bg-light: #f8f9fa;
+            --text-dark: #2c3e50;
+            --text-light: #6c757d;
+            --border: #e9ecef;
+            --shadow: rgba(0,0,0,0.1);
+            --code-bg: #2d2d2d;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--bg-light);
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--text-dark);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box strong {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            color: #d4d4d4;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .code-header {
+            background: #252525;
+            color: #888;
+            padding: 0.5rem 1rem;
+            border-radius: 6px 6px 0 0;
+            margin: -1.5rem -1.5rem 1rem -1.5rem;
+            font-size: 0.85rem;
+        }
+
+        .keyword { color: #c586c0; }
+        .comment { color: #6a9955; }
+        .string { color: #ce9178; }
+        .function { color: #dcdcaa; }
+        .number { color: #b5cea8; }
+        .mut { color: #f59e0b; font-weight: bold; }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .comparison-box {
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid;
+        }
+
+        .wrong {
+            background: #fef2f2;
+            border-color: var(--error);
+        }
+
+        .wrong h4 {
+            color: var(--error);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .correct {
+            background: #f0fdf4;
+            border-color: var(--success);
+        }
+
+        .correct h4 {
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-light);
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        tr:hover {
+            background: var(--bg-light);
+        }
+
+        .error-box {
+            background: #fef2f2;
+            border-left: 4px solid var(--error);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .error-title {
+            font-weight: 600;
+            color: var(--error);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .key-takeaways {
+            background: linear-gradient(135deg, #10b98115 0%, #059c6915 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .key-takeaways h3 {
+            color: var(--success);
+            margin-top: 0;
+        }
+
+        .key-takeaways ul {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .key-takeaways li {
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .key-takeaways li::before {
+            content: "✓";
+            color: var(--success);
+            font-weight: bold;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .toc {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        .toc h3 {
+            margin-top: 0;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            padding: 0.5rem 0;
+        }
+
+        .toc a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .toc a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .mental-model {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .mental-model h3 {
+            margin-top: 0;
+        }
+
+        .box-diagram {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .box {
+            background: white;
+            border: 3px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .box-label {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .box-content {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            margin: 1rem 0;
+        }
+
+        .box-status {
+            font-size: 2rem;
+            margin-top: 1rem;
+        }
+
+        .locked {
+            border-color: var(--error);
+        }
+
+        .unlocked {
+            border-color: var(--success);
+        }
+
+        .scope-diagram {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .scope-level {
+            border: 2px dashed var(--primary);
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        .scope-level-0 { background: #667eea10; }
+        .scope-level-1 { background: #667eea20; margin-left: 1rem; }
+        .scope-level-2 { background: #667eea30; margin-left: 2rem; }
+
+        .best-practices {
+            background: #f0f9ff;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .best-practices h3 {
+            color: var(--info);
+            margin-top: 0;
+        }
+
+        .exercise {
+            background: #f0f9ff;
+            border-left: 4px solid var(--info);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .exercise-title {
+            font-weight: 600;
+            color: var(--info);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        details {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        summary {
+            font-weight: 600;
+            color: var(--primary);
+            padding: 0.5rem;
+            cursor: pointer;
+        }
+
+        summary:hover {
+            color: var(--primary-dark);
+        }
+
+        .checklist {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .checklist li {
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .checklist li::before {
+            content: "☐";
+            font-size: 1.2rem;
+            color: var(--text-light);
+            flex-shrink: 0;
+        }
+
+        .pattern-card {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .pattern-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .comparison,
+            .box-diagram {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 1.5rem 1rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">
+                <span>⚡</span>
+                <span>Fuzion Docs</span>
+            </a>
+        </nav>
+    </header>
+
+    <div class="hero">
+        <h1>🎯 Variables and the mut Keyword</h1>
+        <p>Deep Dive #4: Understanding immutability and mutable state in Fuzion</p>
+    </div>
+
+    <div class="container">
+        <div class="toc">
+            <h3>📑 Quick Navigation</h3>
+            <ul>
+                <li><a href="#what-is">What is a Variable?</a></li>
+                <li><a href="#philosophy">Core Philosophy</a></li>
+                <li><a href="#immutable">Immutable Variables</a></li>
+                <li><a href="#mutable">Mutable Variables</a></li>
+                <li><a href="#examples">Complete Examples</a></li>
+                <li><a href="#scope">Variable Scope</a></li>
+                <li><a href="#mistakes">Common Mistakes</a></li>
+                <li><a href="#mental-models">Mental Models</a></li>
+                <li><a href="#best-practices">Best Practices</a></li>
+            </ul>
+        </div>
+
+        <div class="section" id="what-is">
+            <h2>🎯 What is a Variable?</h2>
+            <div class="highlight-box">
+                <p>A <strong>variable</strong> is a named container that holds a value. In FUZION, variables are <strong>immutable by default</strong> - once you assign a value, you can't change it unless you explicitly mark it as <strong>mutable</strong> with the <code class="mut">mut</code> keyword.</p>
+            </div>
+        </div>
+
+        <div class="section" id="philosophy">
+            <h2>📘 The Core Philosophy: Immutable by Default</h2>
+
+            <h3>Why Immutable by Default?</h3>
+            <div class="key-takeaways">
+                <ul style="margin-top: 0;">
+                    <li><strong>Safer code</strong> - Can't accidentally modify values</li>
+                    <li><strong>Easier debugging</strong> - Value doesn't change unexpectedly</li>
+                    <li><strong>Better reasoning</strong> - Know exactly when things change</li>
+                    <li><strong>Prevents bugs</strong> - No hidden mutations</li>
+                </ul>
+            </div>
+
+            <h3>The Two Types of Variables</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Keyword</th>
+                            <th>Can Reassign?</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Immutable</strong></td>
+                            <td>(none)</td>
+                            <td>❌ No</td>
+                            <td><code>name = "Alice"</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mutable</strong></td>
+                            <td><code class="mut">mut</code></td>
+                            <td>✅ Yes</td>
+                            <td><code><span class="mut">mut</span> count = 0</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section" id="immutable">
+            <h2>🔍 Immutable Variables (Default)</h2>
+
+            <h3>Basic Declaration</h3>
+            <div class="code-block">
+                <pre><code><span class="comment"># Simple assignment</span>
+name = <span class="string">"Alice"</span>
+age = <span class="number">25</span>
+verified = <span class="keyword">true</span>
+
+<span class="comment"># These work fine</span>
+<span class="keyword">print</span> name      <span class="comment"># Alice</span>
+<span class="keyword">print</span> age       <span class="comment"># 25</span>
+<span class="keyword">print</span> verified  <span class="comment"># true</span></code></pre>
+            </div>
+
+            <h3>What "Immutable" Means</h3>
+            <div class="comparison">
+                <div class="comparison-box wrong">
+                    <h4>❌ This Fails - Cannot Reassign</h4>
+                    <div class="code-block">
+                        <pre><code>name = <span class="string">"Alice"</span>
+<span class="keyword">print</span> name      <span class="comment"># Alice</span>
+
+name = <span class="string">"Bob"</span>    <span class="comment"># Error!</span></code></pre>
+                    </div>
+                </div>
+                <div class="comparison-box correct">
+                    <h4>✅ Reading is Always OK</h4>
+                    <div class="code-block">
+                        <pre><code>name = <span class="string">"Alice"</span>
+age = <span class="number">25</span>
+
+greeting = <span class="string">"Hello, {name}!"</span>
+next_year = age + <span class="number">1</span>
+<span class="keyword">print</span> greeting</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="error-box">
+                <div class="error-title">⚠️ Error Message</div>
+                <div class="code-block">
+                    <pre><code>Error: Cannot reassign immutable variable 'name'
+Line 4: name = "Bob"
+        ^^^^
+
+Help: Variables in FUZION are immutable by default.
+      If you need to change the value, declare it with 'mut':
+
+      mut name = "Alice"
+      name = "Bob"  # Now OK</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="mutable">
+            <h2>🔄 Mutable Variables (with mut)</h2>
+
+            <h3>Basic Declaration</h3>
+            <div class="code-block">
+                <pre><code><span class="comment"># Declare with 'mut' keyword</span>
+<span class="mut">mut</span> count = <span class="number">0</span>
+<span class="mut">mut</span> score = <span class="number">100</span>
+<span class="mut">mut</span> active = <span class="keyword">true</span></code></pre>
+            </div>
+
+            <h3>Reassignment</h3>
+            <div class="code-block">
+                <pre><code><span class="mut">mut</span> count = <span class="number">0</span>
+<span class="keyword">print</span> count         <span class="comment"># 0</span>
+
+count = <span class="number">1</span>           <span class="comment"># ✅ OK - variable is mutable</span>
+<span class="keyword">print</span> count         <span class="comment"># 1</span>
+
+count = count + <span class="number">1</span>   <span class="comment"># ✅ OK - read old value, write new</span>
+<span class="keyword">print</span> count         <span class="comment"># 2</span>
+
+count = <span class="number">10</span>          <span class="comment"># ✅ OK - reassign again</span>
+<span class="keyword">print</span> count         <span class="comment"># 10</span></code></pre>
+            </div>
+
+            <h3>Common Use Cases for mut</h3>
+            <div class="code-block">
+                <pre><code><span class="comment"># 1. Counters</span>
+<span class="mut">mut</span> count = <span class="number">0</span>
+<span class="keyword">while</span> count < <span class="number">5</span>:
+    <span class="keyword">print</span> count
+    count = count + <span class="number">1</span>
+
+<span class="comment"># 2. Accumulators</span>
+<span class="mut">mut</span> total = <span class="number">0</span>
+<span class="keyword">for</span> price <span class="keyword">in</span> prices:
+    total = total + price
+<span class="keyword">print</span> <span class="string">"Total: {total}"</span>
+
+<span class="comment"># 3. State tracking</span>
+<span class="mut">mut</span> status = <span class="string">"pending"</span>
+process_order()
+status = <span class="string">"completed"</span>
+
+<span class="comment"># 4. Loop control</span>
+<span class="mut">mut</span> done = <span class="keyword">false</span>
+<span class="keyword">while</span> <span class="keyword">not</span> done:
+    done = check_condition()</code></pre>
+            </div>
+        </div>
+
+        <div class="section" id="examples">
+            <h2>🎨 Complete Examples</h2>
+
+            <h3>Example 1: Immutable Variables</h3>
+            <div class="code-block">
+                <pre><code><span class="comment"># Configuration (shouldn't change)</span>
+api_url = <span class="string">"https://api.example.com"</span>
+timeout = <span class="number">30</span>
+max_retries = <span class="number">3</span>
+
+<span class="comment"># Calculations (derived values)</span>
+half_timeout = timeout / <span class="number">2</span>
+total_wait = timeout * max_retries
+
+<span class="comment"># Using immutable variables</span>
+<span class="function">make_request</span> url:
+    <span class="keyword">print</span> <span class="string">"Requesting: {api_url}{url}"</span>
+    <span class="keyword">print</span> <span class="string">"Timeout: {timeout}s"</span>
+    <span class="keyword">print</span> <span class="string">"Max retries: {max_retries}"</span>
+
+make_request <span class="string">"/users"</span></code></pre>
+            </div>
+            <p><strong>Why immutable here?</strong> Configuration values shouldn't change during execution.</p>
+
+            <h3>Example 2: Mutable Variables</h3>
+            <div class="code-block">
+                <pre><code><span class="comment"># Game score tracker</span>
+<span class="mut">mut</span> score = <span class="number">0</span>
+<span class="mut">mut</span> lives = <span class="number">3</span>
+<span class="mut">mut</span> level = <span class="number">1</span>
+
+<span class="function">gain_points</span> amount:
+    score = score + amount
+    <span class="keyword">print</span> <span class="string">"Score: {score}"</span>
+
+<span class="function">lose_life</span>:
+    lives = lives - <span class="number">1</span>
+    <span class="keyword">print</span> <span class="string">"Lives remaining: {lives}"</span>
+
+<span class="function">next_level</span>:
+    level = level + <span class="number">1</span>
+    score = score + <span class="number">100</span>  <span class="comment"># Bonus</span>
+    <span class="keyword">print</span> <span class="string">"Level {level}! Score: {score}"</span>
+
+<span class="comment"># Gameplay</span>
+gain_points <span class="number">50</span>      <span class="comment"># Score: 50</span>
+gain_points <span class="number">30</span>      <span class="comment"># Score: 80</span>
+next_level()        <span class="comment"># Level 2! Score: 180</span>
+lose_life()         <span class="comment"># Lives remaining: 2</span></code></pre>
+            </div>
+            <p><strong>Why mutable here?</strong> Game state needs to change as player progresses.</p>
+
+            <h3>Example 3: Mixed Usage</h3>
+            <div class="code-block">
+                <pre><code><span class="comment"># Immutable configuration</span>
+player_name = <span class="string">"Alice"</span>
+starting_health = <span class="number">100</span>
+
+<span class="comment"># Mutable state</span>
+<span class="mut">mut</span> current_health = starting_health
+<span class="mut">mut</span> enemies_defeated = <span class="number">0</span>
+
+<span class="function">take_damage</span> amount:
+    current_health = current_health - amount
+    <span class="keyword">print</span> <span class="string">"{player_name}'s health: {current_health}/{starting_health}"</span>
+
+<span class="function">defeat_enemy</span>:
+    enemies_defeated = enemies_defeated + <span class="number">1</span>
+    <span class="keyword">print</span> <span class="string">"{player_name} defeated {enemies_defeated} enemies"</span>
+
+<span class="comment"># During game</span>
+take_damage <span class="number">20</span>      <span class="comment"># Alice's health: 80/100</span>
+defeat_enemy()      <span class="comment"># Alice defeated 1 enemies</span>
+take_damage <span class="number">15</span>      <span class="comment"># Alice's health: 65/100</span>
+defeat_enemy()      <span class="comment"># Alice defeated 2 enemies</span></code></pre>
+            </div>
+            <p><strong>Best of both worlds:</strong> Name and max health don't change, but current health and score do.</p>
+        </div>
+
+        <div class="section" id="scope">
+            <h2>🧠 Variable Scope</h2>
+
+            <h3>What is Scope?</h3>
+            <p><strong>Scope</strong> determines where a variable can be accessed.</p>
+
+            <h3>Rule 1: Block Scope</h3>
+            <p>Variables exist only within their block (defined by indentation):</p>
+            <div class="comparison">
+                <div class="comparison-box wrong">
+                    <h4>❌ Out of Scope</h4>
+                    <div class="code-block">
+                        <pre><code><span class="keyword">if</span> condition:
+    message = <span class="string">"true branch"</span>
+    <span class="keyword">print</span> message    <span class="comment"># ✅ OK</span>
+
+<span class="keyword">print</span> message        <span class="comment"># ❌ Error</span></code></pre>
+                    </div>
+                </div>
+                <div class="comparison-box correct">
+                    <h4>✅ Correct Scope</h4>
+                    <div class="code-block">
+                        <pre><code>message = <span class="string">"default"</span>
+
+<span class="keyword">if</span> condition:
+    message = <span class="string">"true branch"</span>
+
+<span class="keyword">print</span> message        <span class="comment"># ✅ OK</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Rule 2: Inner Blocks Can Read Outer Variables</h3>
+            <div class="code-block">
+                <pre><code>outer = <span class="string">"I'm outside"</span>
+
+<span class="keyword">if</span> condition:
+    <span class="keyword">print</span> outer             <span class="comment"># ✅ OK - can read outer variable</span>
+    inner = <span class="string">"I'm inside"</span>
+    <span class="keyword">print</span> inner             <span class="comment"># ✅ OK - reading own variable</span>
+
+<span class="keyword">print</span> outer                 <span class="comment"># ✅ OK - outer still exists</span>
+<span class="comment"># print inner               # ❌ Error - inner doesn't exist here</span></code></pre>
+            </div>
+
+            <h3>Visual Scope Example</h3>
+            <div class="scope-diagram">
+                <div class="scope-level scope-level-0">
+                    <strong>Level 0: Global scope</strong><br>
+                    x = 10
+                    <div class="scope-level scope-level-1">
+                        <strong>Level 1: Function scope</strong><br>
+                        y = 20  (can read x)
+                        <div class="scope-level scope-level-2">
+                            <strong>Level 2: If block scope</strong><br>
+                            z = 30  (can read x, y)
+                        </div>
+                        Can read: x, y<br>
+                        Can't read: z
+                    </div>
+                    Can read: x<br>
+                    Can't read: y, z
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="mistakes">
+            <h2>❌ Common Mistakes</h2>
+
+            <h3>Mistake 1: Trying to Reassign Immutable Variable</h3>
+            <div class="comparison">
+                <div class="comparison-box wrong">
+                    <h4>❌ WRONG</h4>
+                    <div class="code-block">
+                        <pre><code>count = <span class="number">0</span>
+count = <span class="number">1</span>           <span class="comment"># Error!</span></code></pre>
+                    </div>
+                </div>
+                <div class="comparison-box correct">
+                    <h4>✅ CORRECT</h4>
+                    <div class="code-block">
+                        <pre><code><span class="mut">mut</span> count = <span class="number">0</span>
+count = <span class="number">1</span>           <span class="comment"># OK now</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Mistake 2: Forgetting mut in Loops</h3>
+            <div class="comparison">
+                <div class="comparison-box wrong">
+                    <h4>❌ WRONG</h4>
+                    <div class="code-block">
+                        <pre><code>i = <span class="number">0</span>
+<span class="keyword">while</span> i < <span class="number">5</span>:
+    <span class="keyword">print</span> i
+    i = i + <span class="number">1</span>       <span class="comment"># Error!</span></code></pre>
+                    </div>
+                </div>
+                <div class="comparison-box correct">
+                    <h4>✅ CORRECT</h4>
+                    <div class="code-block">
+                        <pre><code><span class="mut">mut</span> i = <span class="number">0</span>
+<span class="keyword">while</span> i < <span class="number">5</span>:
+    <span class="keyword">print</span> i
+    i = i + <span class="number">1</span>       <span class="comment"># OK now</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Mistake 3: Using Variable Before Declaration</h3>
+            <div class="comparison">
+                <div class="comparison-box wrong">
+                    <h4>❌ WRONG</h4>
+                    <div class="code-block">
+                        <pre><code><span class="keyword">print</span> name          <span class="comment"># Error!</span>
+name = <span class="string">"Alice"</span></code></pre>
+                    </div>
+                </div>
+                <div class="comparison-box correct">
+                    <h4>✅ CORRECT</h4>
+                    <div class="code-block">
+                        <pre><code>name = <span class="string">"Alice"</span>
+<span class="keyword">print</span> name          <span class="comment"># OK</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Mistake 4: Accessing Out-of-Scope Variable</h3>
+            <div class="pattern-card">
+                <div class="pattern-title">❌ Wrong Approach</div>
+                <div class="code-block">
+                    <pre><code><span class="keyword">if</span> <span class="keyword">true</span>:
+    temp = <span class="string">"inside"</span>
+
+<span class="keyword">print</span> temp          <span class="comment"># Error: 'temp' not in scope</span></code></pre>
+                </div>
+            </div>
+
+            <div class="pattern-card">
+                <div class="pattern-title">✅ Fix Option 1: Use Mutable Outside</div>
+                <div class="code-block">
+                    <pre><code><span class="mut">mut</span> temp = <span class="string">"default"</span>
+<span class="keyword">if</span> <span class="keyword">true</span>:
+    temp = <span class="string">"inside"</span>  <span class="comment"># OK - reassigning mutable</span>
+
+<span class="keyword">print</span> temp          <span class="comment"># "inside"</span></code></pre>
+                </div>
+            </div>
+
+            <div class="pattern-card">
+                <div class="pattern-title">✅ Fix Option 2: Return Value (Best)</div>
+                <div class="code-block">
+                    <pre><code>temp = <span class="keyword">if</span> <span class="keyword">true</span>:
+    <span class="string">"inside"</span>
+<span class="keyword">else</span>:
+    <span class="string">"default"</span>
+
+<span class="keyword">print</span> temp          <span class="comment"># "inside"</span></code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="mental-models">
+            <h2>💡 Mental Models</h2>
+
+            <h3>Model 1: "The Box Metaphor"</h3>
+            <div class="box-diagram">
+                <div class="box locked">
+                    <div class="box-label">Immutable Variable</div>
+                    <div>Sealed box with a label</div>
+                    <div class="box-content">name<br>"Alice"</div>
+                    <div class="box-status">🔒 Sealed</div>
+                </div>
+                <div class="box unlocked">
+                    <div class="box-label">Mutable Variable</div>
+                    <div>Box with resealable lid</div>
+                    <div class="box-content">mut count<br>0 → 1 → 2</div>
+                    <div class="box-status">🔓 Resealable</div>
+                </div>
+            </div>
+
+            <h3>Model 2: "The Name Tag"</h3>
+            <p>Think of a variable as a <strong>name tag</strong> pointing to a value:</p>
+            <div class="code-block">
+                <pre><code>x = <span class="number">10</span>          <span class="comment"># Name tag 'x' points to 10</span>
+
+       x
+       ↓
+     [10]
+
+<span class="mut">mut</span> y = <span class="number">10</span>      <span class="comment"># Name tag 'mut y' can be reattached</span>
+
+    <span class="mut">mut</span> y
+       ↓
+     [10] → [20] → [30]</code></pre>
+            </div>
+
+            <h3>Model 3: "The Scope Circles"</h3>
+            <p>Variables live in nested circles (scopes):</p>
+            <div class="mental-model">
+                <pre style="font-family: 'Courier New', monospace; line-height: 1.8;">
+┌─────────────────────────────────┐
+│ <strong>Global Scope</strong>                    │
+│  x = 10                         │
+│                                 │
+│  ┌────────────────────────────┐│
+│  │ <strong>Function Scope</strong>             ││
+│  │  y = 20                    ││
+│  │                            ││
+│  │  ┌───────────────────────┐││
+│  │  │ <strong>If Block Scope</strong>        │││
+│  │  │  z = 30               │││
+│  │  │                       │││
+│  │  │  Can access:          │││
+│  │  │  ✅ z (own)           │││
+│  │  │  ✅ y (parent)        │││
+│  │  │  ✅ x (grandparent)   │││
+│  │  └───────────────────────┘││
+│  │                            ││
+│  │  Can access:              ││
+│  │  ✅ y (own)               ││
+│  │  ✅ x (parent)            ││
+│  │  ❌ z (out of scope)      ││
+│  └────────────────────────────┘│
+│                                 │
+│  Can access:                    │
+│  ✅ x (own)                     │
+│  ❌ y, z (out of scope)         │
+└─────────────────────────────────┘
+                </pre>
+            </div>
+        </div>
+
+        <div class="best-practices" id="best-practices">
+            <h3>🎓 Best Practices</h3>
+
+            <h4>1. Default to Immutable</h4>
+            <div class="comparison">
+                <div class="comparison-box correct">
+                    <h4>✅ GOOD</h4>
+                    <div class="code-block">
+                        <pre><code><span class="comment"># Use immutable when possible</span>
+name = <span class="string">"Alice"</span>
+age = <span class="number">25</span>
+max_score = <span class="number">1000</span>
+
+<span class="comment"># Only use mut when necessary</span>
+<span class="mut">mut</span> current_score = <span class="number">0</span></code></pre>
+                    </div>
+                </div>
+                <div class="comparison-box wrong">
+                    <h4>❌ AVOID</h4>
+                    <div class="code-block">
+                        <pre><code><span class="comment"># Don't use mut unnecessarily</span>
+<span class="mut">mut</span> name = <span class="string">"Alice"</span>
+<span class="mut">mut</span> age = <span class="number">25</span>
+<span class="mut">mut</span> max_score = <span class="number">1000</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h4>2. Small Scope for Mutable Variables</h4>
+            <div class="comparison">
+                <div class="comparison-box wrong">
+                    <h4>❌ BAD - Wide scope</h4>
+                    <div class="code-block">
+                        <pre><code><span class="mut">mut</span> result = <span class="number">0</span>
+
+<span class="comment"># ... 100 lines ...</span>
+
+result = calculate()</code></pre>
+                    </div>
+                </div>
+                <div class="comparison-box correct">
+                    <h4>✅ GOOD - Narrow scope</h4>
+                    <div class="code-block">
+                        <pre><code><span class="function">process_data</span>:
+    <span class="mut">mut</span> result = <span class="number">0</span>
+    <span class="keyword">for</span> item <span class="keyword">in</span> items:
+        result = result + item
+    <span class="keyword">return</span> result</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h4>3. Clear Names for Mutable Variables</h4>
+            <div class="comparison">
+                <div class="comparison-box wrong">
+                    <h4>❌ Unclear</h4>
+                    <div class="code-block">
+                        <pre><code><span class="mut">mut</span> x = <span class="number">0</span></code></pre>
+                    </div>
+                </div>
+                <div class="comparison-box correct">
+                    <h4>✅ Clear and Descriptive</h4>
+                    <div class="code-block">
+                        <pre><code><span class="mut">mut</span> current_index = <span class="number">0</span>
+<span class="mut">mut</span> running_total = <span class="number">0</span>
+<span class="mut">mut</span> retry_count = <span class="number">0</span></code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h4>4. Consider Immutable Alternatives</h4>
+            <div class="comparison">
+                <div class="comparison-box">
+                    <h4>Mutable approach</h4>
+                    <div class="code-block">
+                        <pre><code><span class="mut">mut</span> total = <span class="number">0</span>
+<span class="keyword">for</span> price <span class="keyword">in</span> prices:
+    total = total + price</code></pre>
+                    </div>
+                </div>
+                <div class="comparison-box correct">
+                    <h4>✅ Functional approach</h4>
+                    <div class="code-block">
+                        <pre><code>total = sum(prices)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Variable Declaration Patterns</h2>
+
+            <div class="pattern-card">
+                <div class="pattern-title">Pattern 1: Simple Declaration</div>
+                <div class="code-block">
+                    <pre><code>name = <span class="string">"Alice"</span>
+age = <span class="number">25</span>
+verified = <span class="keyword">true</span></code></pre>
+                </div>
+            </div>
+
+            <div class="pattern-card">
+                <div class="pattern-title">Pattern 2: With Type Annotation</div>
+                <div class="code-block">
+                    <pre><code>name: text = <span class="string">"Alice"</span>
+age: number = <span class="number">25</span>
+verified: bool = <span class="keyword">true</span></code></pre>
+                </div>
+            </div>
+
+            <div class="pattern-card">
+                <div class="pattern-title">Pattern 3: Mutable Declaration</div>
+                <div class="code-block">
+                    <pre><code><span class="mut">mut</span> count = <span class="number">0</span>
+<span class="mut">mut</span> status = <span class="string">"pending"</span>
+<span class="mut">mut</span> items = []</code></pre>
+                </div>
+            </div>
+
+            <div class="pattern-card">
+                <div class="pattern-title">Pattern 4: Mutable with Type</div>
+                <div class="code-block">
+                    <pre><code><span class="mut">mut</span> count: number = <span class="number">0</span>
+<span class="mut">mut</span> status: text = <span class="string">"pending"</span>
+<span class="mut">mut</span> items: list = []</code></pre>
+                </div>
+            </div>
+
+            <div class="pattern-card">
+                <div class="pattern-title">Pattern 5: Multiple Related Variables</div>
+                <div class="code-block">
+                    <pre><code><span class="comment"># Immutable config</span>
+host = <span class="string">"localhost"</span>
+port = <span class="number">8080</span>
+timeout = <span class="number">30</span>
+
+<span class="comment"># Mutable state</span>
+<span class="mut">mut</span> connected = <span class="keyword">false</span>
+<span class="mut">mut</span> retry_count = <span class="number">0</span>
+<span class="mut">mut</span> last_error = <span class="keyword">none</span></code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Quick Reference Chart</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Scenario</th>
+                            <th>Use Immutable</th>
+                            <th>Use Mutable</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Configuration values</td><td>✅</td><td>❌</td></tr>
+                        <tr><td>Constants</td><td>✅</td><td>❌</td></tr>
+                        <tr><td>Function parameters</td><td>✅ (usually)</td><td>❌ (usually)</td></tr>
+                        <tr><td>Loop counters</td><td>❌</td><td>✅</td></tr>
+                        <tr><td>Accumulators</td><td>❌</td><td>✅</td></tr>
+                        <tr><td>State tracking</td><td>❌</td><td>✅</td></tr>
+                        <tr><td>Derived calculations</td><td>✅</td><td>❌</td></tr>
+                        <tr><td>Temporary values</td><td>✅</td><td>❌</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🧪 Practice Exercises</h2>
+
+            <div class="exercise">
+                <div class="exercise-title">Exercise 1: Fix the Code</div>
+                <p>What's wrong here?</p>
+                <div class="code-block">
+                    <pre><code>count = <span class="number">0</span>
+<span class="keyword">while</span> count < <span class="number">5</span>:
+    <span class="keyword">print</span> count
+    count = count + <span class="number">1</span></code></pre>
+                </div>
+
+                <details>
+                    <summary>View Answer</summary>
+                    <div class="code-block">
+                        <pre><code><span class="comment"># Fixed - 'count' needs to be mutable</span>
+<span class="mut">mut</span> count = <span class="number">0</span>
+<span class="keyword">while</span> count < <span class="number">5</span>:
+    <span class="keyword">print</span> count
+    count = count + <span class="number">1</span></code></pre>
+                    </div>
+                    <p>The variable <code>count</code> is being reassigned in the loop, so it must be declared as mutable.</p>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <div class="exercise-title">Exercise 2: Should This Be Mutable?</div>
+                <p>Is <code>mut</code> needed here?</p>
+                <div class="code-block">
+                    <pre><code>api_key = <span class="string">"secret_key_123"</span>
+base_url = <span class="string">"https://api.example.com"</span>
+timeout = <span class="number">30</span>
+
+<span class="function">make_request</span> endpoint:
+    full_url = <span class="string">"{base_url}{endpoint}"</span>
+    <span class="comment"># ... make HTTP request ...</span></code></pre>
+                </div>
+
+                <details>
+                    <summary>View Answer</summary>
+                    <p><strong>No, <code>mut</code> is not needed.</strong> These are configuration values that don't change during execution. The <code>full_url</code> is a derived value (immutable calculation), not a mutation of <code>base_url</code>.</p>
+                    <p>The code is correct as-is with all immutable variables.</p>
+                </details>
+            </div>
+
+            <div class="exercise">
+                <div class="exercise-title">Exercise 3: Refactor to Use Immutable</div>
+                <p>Can this be made immutable?</p>
+                <div class="code-block">
+                    <pre><code><span class="mut">mut</span> total = <span class="number">0</span>
+total = calculate_subtotal()
+total = total + calculate_tax(total)
+total = total + calculate_shipping()
+<span class="keyword">return</span> total</code></pre>
+                </div>
+
+                <details>
+                    <summary>View Answer</summary>
+                    <p><strong>Yes! Each step can be its own immutable variable:</strong></p>
+                    <div class="code-block">
+                        <pre><code>subtotal = calculate_subtotal()
+tax = calculate_tax(subtotal)
+shipping = calculate_shipping()
+total = subtotal + tax + shipping
+<span class="keyword">return</span> total</code></pre>
+                    </div>
+                    <p>Or even more concise:</p>
+                    <div class="code-block">
+                        <pre><code>subtotal = calculate_subtotal()
+total = subtotal + calculate_tax(subtotal) + calculate_shipping()
+<span class="keyword">return</span> total</code></pre>
+                    </div>
+                    <p>Since we're not reusing intermediate values, immutable variables work fine.</p>
+                </details>
+            </div>
+        </div>
+
+        <div class="key-takeaways">
+            <h3>✅ Key Takeaways</h3>
+            <ul>
+                <li><strong>Immutable by default</strong> - Variables can't be reassigned unless marked <code class="mut">mut</code></li>
+                <li><strong>mut keyword</strong> - Explicitly declares a mutable variable</li>
+                <li><strong>Safer code</strong> - Immutability prevents accidental changes</li>
+                <li><strong>Scope rules</strong> - Variables only exist in their block and nested blocks</li>
+                <li><strong>Reading is free</strong> - Can always read any in-scope variable</li>
+                <li><strong>Writing needs mut</strong> - Can only reassign if declared mutable</li>
+                <li><strong>Best practice</strong> - Use immutable unless you need to change the value</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🎯 Mental Checklist</h2>
+            <p><strong>Before declaring a variable:</strong></p>
+            <ul class="checklist">
+                <li>Will this value change after initial assignment?
+                    <ul style="margin-left: 2rem; list-style: disc;">
+                        <li><strong>No</strong> → Use immutable (default)</li>
+                        <li><strong>Yes</strong> → Use <code class="mut">mut</code></li>
+                    </ul>
+                </li>
+                <li>Is this a counter, accumulator, or state?
+                    <ul style="margin-left: 2rem; list-style: disc;">
+                        <li><strong>Yes</strong> → Probably needs <code class="mut">mut</code></li>
+                    </ul>
+                </li>
+                <li>Is this configuration or a constant?
+                    <ul style="margin-left: 2rem; list-style: disc;">
+                        <li><strong>Yes</strong> → Definitely immutable</li>
+                    </ul>
+                </li>
+                <li>Can I refactor to avoid mutation?
+                    <ul style="margin-left: 2rem; list-style: disc;">
+                        <li><strong>Yes</strong> → Consider functional approach</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🚀 Next Steps</h2>
+            <p>Now that you understand variables and mutability, you're ready for:</p>
+            <div class="box-diagram">
+                <div class="box" style="border-color: var(--primary);">
+                    <div class="box-label">#5 - Function Parameters</div>
+                    <p>How variables work as parameters</p>
+                </div>
+                <div class="box" style="border-color: var(--primary);">
+                    <div class="box-label">#13 - Closures</div>
+                    <p>How mutable variables are captured</p>
+                </div>
+                <div class="box" style="border-color: var(--primary);">
+                    <div class="box-label">#14 - Types and Objects</div>
+                    <p>Mutable fields in types</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="highlight-box" style="text-align: center; margin-top: 2rem;">
+            <p style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0;">
+                Master immutability and mutation to write safer, more predictable Fuzion code! 🎉
+            </p>
+        </div>
+    </div>
+</body>
+</html>
